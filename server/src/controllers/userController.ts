@@ -47,8 +47,6 @@ router.post('/create', async (req: Request, res: Response) => {
   }
 });
 
-export default router;
-
 // POST: /user/login
 router.post('/login', async (req: Request, res: Response) => {
   const email = req.body.email;
@@ -80,3 +78,5 @@ router.post('/login', async (req: Request, res: Response) => {
   const token = await Auth.generateToken(user.id);
   res.json({ code: 200, msg: 'Success', token: token });
 });
+
+export default router;
