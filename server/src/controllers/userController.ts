@@ -8,6 +8,7 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {});
 
+// POST: /user/create
 router.post('/create', async (req: Request, res: Response) => {
   const name = req.body.username;
   const email = req.body.email;
@@ -47,3 +48,35 @@ router.post('/create', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// POST: /user/login
+router.post('/login', async (req: Request, res: Response) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password) {
+    res.json({ code: 400, msg: 'Please fill all the fields' });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (!user) {
+    res.json({ code: 400, msg: 'This email is not registered' });
+    return;
+  }
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+
+  if (!isValidPassword) {
+    res.json({ code: 400, msg: 'Invalid password' });
+    return;
+  }
+
+  const token = await Auth.generateToken(user.id);
+  res.json({ code: 200, msg: 'Success', token: token });
+});
