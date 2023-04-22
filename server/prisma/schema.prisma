@@ -30,7 +30,7 @@ model User {
   createdAt       DateTime    @default(now())
   updateAt        DateTime    @updatedAt
   authTokens      AuthToken[]
-  watchRepository String //[] // owner/repo
+  watchRepository String? //[] // owner/repo
 
   reports Report[]
 }

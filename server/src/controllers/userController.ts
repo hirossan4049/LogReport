@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { Request, Response, Router } from 'express';
+import { Auth } from '../libs/auth';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -30,11 +31,19 @@ router.post('/create', async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = await prisma.user.create({
-    data: {
-      name: name,
-      email: email,
-      password: hashedPassword,
-    },
-  });
+  try {
+    const user = await prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        password: hashedPassword,
+      },
+    });
+    const token = await Auth.generateToken(user.id);
+    res.json({ code: 200, msg: 'Success', token: token });
+  } catch (e) {
+    res.json({ code: 500, msg: 'Internal Server Error' });
+  }
 });
+
+export default router;
