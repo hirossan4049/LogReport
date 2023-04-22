@@ -56,15 +56,24 @@ enum AuthTokenType {
 }
 
 model Report {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
-  userId    String
-  User      User     @relation(fields: [userId], references: [id])
-  date      DateTime
-  startTime DateTime
-  endTime   DateTime
-  report    String
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updateAt   DateTime   @updatedAt
+  userId     String
+  User       User       @relation(fields: [userId], references: [id])
+  date       DateTime
+  startTime  DateTime
+  endTime    DateTime
+  restTime   Int        @default(0)
+  report     String
+  reportType ReportType @default(CHAT_GPT_WAITING)
 
   @@index(date)
+}
+
+enum ReportType {
+  CHAT_GPT_WAITING
+  CHAT_GPT_RUNNING
+  CHAT_GPT_COMPLETE
+  CUSTOM
 }
