@@ -10,8 +10,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model AppConfig {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updateAt  DateTime     @updatedAt
+  key       AppConfigKey @unique
+  value     String
+}
+
+enum AppConfigKey {
+  expiressIn
+}
+
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  password        String      @unique
+  createdAt       DateTime    @default(now())
+  updateAt        DateTime    @updatedAt
+  authTokens      AuthToken[]
+  watchRepository String //[] // owner/repo
+
+  reports Report[]
+}
+
+model AuthToken {
+  id         Int           @id @default(autoincrement())
+  createAt   DateTime      @default(now())
+  updateAt   DateTime      @updatedAt
+  expiressIn String
+  userId     String
+  token      String
+  tokenType  AuthTokenType
+  User       User          @relation(fields: [userId], references: [id])
+
+  @@index(updateAt)
+}
+
+enum AuthTokenType {
+  APPLE
+  GOOGLE
+  PIN
+  JWT
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  userId    String
+  User      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  report    String
+
+  @@index(date)
 }
