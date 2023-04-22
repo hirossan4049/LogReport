@@ -31,17 +31,53 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
 });
 
 // PUT: /report
-router.put('/', async (req: Request, res: Response) => {
+router.put('/', Auth.verify, async (req: Request, res: Response) => {
+  if (!req.userId) {
+    await res.json({ msg: 'user is not specified' });
+    return;
+  }
+
   const date = req.body.date;
   const startTime = req.body.startTime;
   const endTime = req.body.endTime;
-  const restTime = req.body.restTime;
+  const restTime = Number(req.body.restTime);
   const report = req.body.report || '';
   const reportType = req.body.reportType || 'CHAT_GPT_WAITING';
 
   if (!date || !startTime || !endTime || !restTime) {
     await res.json({ msg: 'date, startTime, endTime or restTime is not specified' });
     return;
+  }
+
+  try {
+    await prisma.report.upsert({
+      where: {
+        report_unique: {
+          userId: req.userId,
+          date: new Date(date),
+        },
+      },
+      update: {
+        startTime: startTime,
+        endTime: endTime,
+        restTime: restTime,
+        report: report,
+        reportType: reportType,
+      },
+      create: {
+        userId: req.userId,
+        date: new Date(date),
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+        restTime: restTime,
+        report: report,
+        reportType: reportType,
+      },
+    });
+    await res.json({ msg: 'success' });
+  } catch (e) {
+    console.error(e)
+    await res.json({ msg: 'error' });
   }
 });
 

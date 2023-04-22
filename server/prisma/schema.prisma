@@ -68,6 +68,7 @@ model Report {
   report     String
   reportType ReportType @default(CHAT_GPT_WAITING)
 
+  @@unique([userId, date], name: "report_unique")
   @@index(date)
 }
 
