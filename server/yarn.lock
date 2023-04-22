@@ -41,6 +41,45 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.39.0.tgz#58b536bcc843f4cd1e02a7e6171da5c040f4d44b"
   integrity sha512-kf9RB0Fg7NZfap83B3QOqOGg9QmD9yBudqQXzzOtn3i4y7ZUXe5ONeW34Gwi+TxhH4mvj72R1Zc300KUMa9Bng==
 
+"@esm2cjs/human-signals@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/human-signals/-/human-signals-3.0.1.tgz#87c205899668d3f6c370eb82a7e9b896e2a1efbc"
+  integrity sha512-QZme4eF/PwTpeSbMB4AaWGQ4VSygzE30jI+Oas1NPTtZQAgcHwWVDOQpIW8FUmtzn5Q+2cS7AjnTzbtqtc5P6g==
+
+"@esm2cjs/is-stream@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/is-stream/-/is-stream-3.0.0.tgz#868e24882efdd35cfd6f139332abde30e7b3a946"
+  integrity sha512-qcBscHlJpZFOD5nnmMHkzOrq2xyvsp9fbVreQLS8x2LOs8N3CrNi3fqvFY0GVJR+YSOHscwhG9T5t4Ck7R7QGw==
+
+"@esm2cjs/mimic-fn@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/mimic-fn/-/mimic-fn-4.0.0.tgz#7ac5185e4902638b7ed68f6e2f4f2e4bd14532bb"
+  integrity sha512-LIIAjcpjLr4rcbYmRQ+eRu55Upy/MMB78seIlwqbnyiA+cTa1/pxWnJ1NHJQrw6tx2wMQmlYoJj+wf16NjWH6Q==
+
+"@esm2cjs/npm-run-path@^5.1.1-cjs.0":
+  version "5.1.1-cjs.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/npm-run-path/-/npm-run-path-5.1.1-cjs.0.tgz#bbd9531acee450168f68a535f3df4ff6fff2ee1e"
+  integrity sha512-CWeAIyE8iNSCgP2ItPE8iPgS+lACqgH+MuFRaWOIl2T7hnHqPFfhAJJ/LcLJJ/RMIxNMeenjFMwc91HW7NWr1A==
+  dependencies:
+    "@esm2cjs/path-key" "^4.0.0"
+
+"@esm2cjs/onetime@^6.0.1-cjs.0":
+  version "6.0.1-cjs.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/onetime/-/onetime-6.0.1-cjs.0.tgz#24ed91716f4e1e7daebc416f26357be08b4f8050"
+  integrity sha512-MkZMZSxrSC/6yUuAw6Azc56XOgwHQQIsNDlO/zgFmOcycJBhRwRuc/gdYUUOFNZIh7y+f0JSIxkNdJPFvJ5W0w==
+  dependencies:
+    "@esm2cjs/mimic-fn" "^4.0.0"
+
+"@esm2cjs/path-key@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/path-key/-/path-key-4.0.0.tgz#4c406fe897f9bb880d8619751ce72395867eb9e2"
+  integrity sha512-fKzZ3uIIP4j+7WfyG0MEkomGHL0hUXWCx1kY2Zct3GTdl4pyY+3k5lCUxjgdDa2Ld1BCjMNorXnRHiBP6jW6CQ==
+
+"@esm2cjs/strip-final-newline@^3.0.1-cjs.0":
+  version "3.0.1-cjs.0"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/strip-final-newline/-/strip-final-newline-3.0.1-cjs.0.tgz#79a891eaa0414e4898fc2dc8220583ab7bd4bb0a"
+  integrity sha512-o41riCGPiOEStayoikBCAqwa6igbv9L9rP+k5UCfQ24EJD/wGrdDs/KTNwkHG5JzDK3T60D5dMkWkLKEPy8gjA==
+
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.8.tgz#03595ac2075a4dc0f191cc2131de14fbd7d410b9"
@@ -550,7 +589,7 @@ cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.2:
+cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -827,6 +866,21 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
+"execa@npm:@esm2cjs/execa":
+  version "6.1.1-cjs.1"
+  resolved "https://registry.yarnpkg.com/@esm2cjs/execa/-/execa-6.1.1-cjs.1.tgz#e6bdede1ce4a89cfbfe8b2d6f687b674b4149f38"
+  integrity sha512-FHxfnmuDIjY1VS/BLzDkL8EkbcFvi8s6x1nYQ1Nyu0An0n88EJcGhDBcRWLFwt3C3nT7xwI+MwHRH1TZcAFW2w==
+  dependencies:
+    "@esm2cjs/human-signals" "^3.0.1"
+    "@esm2cjs/is-stream" "^3.0.0"
+    "@esm2cjs/npm-run-path" "^5.1.1-cjs.0"
+    "@esm2cjs/onetime" "^6.0.1-cjs.0"
+    "@esm2cjs/strip-final-newline" "^3.0.1-cjs.0"
+    cross-spawn "^7.0.3"
+    get-stream "^6.0.1"
+    merge-stream "^2.0.0"
+    signal-exit "^3.0.7"
+
 express@^4.18.2:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
@@ -1000,6 +1054,11 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     function-bind "^1.1.1"
     has "^1.0.3"
     has-symbols "^1.0.3"
+
+get-stream@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-6.0.1.tgz#a262d8eef67aced57c2852ad6167526a43cbf7b7"
+  integrity sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==
 
 get-symbol-description@^1.0.0:
   version "1.0.0"
@@ -1421,6 +1480,11 @@ merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha512-cCi6g3/Zr1iqQi6ySbseM1Xvooa98N0w31jzUYrXPX2xqObmFGHJ0tQ5u74H3mVh7wLouTseZyYIq39g8cNp1w==
+
+merge-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
+  integrity sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
 
 merge2@^1.3.0, merge2@^1.4.1:
   version "1.4.1"
@@ -1916,6 +1980,11 @@ side-channel@^1.0.4:
     call-bind "^1.0.0"
     get-intrinsic "^1.0.2"
     object-inspect "^1.9.0"
+
+signal-exit@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
+  integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
 simple-update-notifier@^1.0.7:
   version "1.1.0"
