@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response, Router } from 'express';
 import { Auth } from '../libs/auth';
+import { getReport } from '../libs/getReport';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -82,8 +83,46 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
 });
 
 // POST: /report/autocomplete
-router.post('/autocomplete', async (req: Request, res: Response) => {
+router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) => {
+  if (!req.userId) {
+    await res.json({ msg: 'user is not specified' });
+    return;
+  }
+
   const reportId = req.body.reportId;
+
+  if (!reportId) {
+    await res.json({ msg: 'reportId is not specified' });
+    return;
+  }
+
+  try {
+    const report = await prisma.report.findUnique({
+      where: {
+        id: reportId,
+      },
+    });
+    if (!report) {
+      await res.json({ msg: 'report is not found' });
+      return;
+    }
+
+    // TODO: waitlist
+    const gpt_report = await getReport("owner", "reponame", report.startTime, report.endTime, "author")
+    const new_report = await prisma.report.update({
+      where: {
+        id: reportId,
+      },
+      data: {
+        report: gpt_report,
+        reportType: 'CHAT_GPT_COMPLETE',
+      },
+    });
+    await res.json({ msg: 'success', data: new_report });
+  } catch (e) {
+    console.error(e)
+    await res.json({ msg: 'error' });
+  }
 });
 
 export default router;
