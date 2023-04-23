@@ -28,7 +28,7 @@ export const Header = () => {
         {cookies.token ? (
           <Menu>
             <MenuButton>
-              <Avatar name={"user name"} h={12} w={12} />
+              <Avatar name={"user name"} h={10} w={10} />
             </MenuButton>
             <MenuList>
               <MenuItem>プロフィール</MenuItem>
