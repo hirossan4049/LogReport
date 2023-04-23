@@ -35,12 +35,7 @@ export const Home = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (cookies.token === undefined) {
-      //ひゃー
-      return;
-    }
-
+  const _fetchReports = async () => {
     const lastDay = new Date(year, month, 0).getDate();
     const weeks = ["日", "月", "火", "水", "木", "金", "土"];
     const reports: Report[] = Array.from(
@@ -54,30 +49,40 @@ export const Home = () => {
       };
     });
 
+    const response = await fetchReports(year.toString(), month.toString());
+    console.log(response.data.map((data) => new Date(data.date).getDate()));
+
+    response.data.forEach((data) => {
+      const date = new Date(data.date).getDate();
+      reports[date - 1] = {
+        id: data.id,
+        date: reports[date - 1].date,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        report: data.report,
+        reportType: data.reportType,
+      };
+    });
+
+    setReports(reports);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (cookies.token === undefined) {
+      //ひゃー
+      return;
+    }
+
     axiosConfigure();
-
-    const _fetchReports = async () => {
-      const response = await fetchReports(year.toString(), month.toString());
-      console.log(response.data.map((data) => new Date(data.date).getDate()));
-
-      response.data.forEach((data) => {
-        const date = new Date(data.date).getDate();
-        reports[date - 1] = {
-          id: data.id,
-          date: reports[date - 1].date,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          report: data.report,
-          reportType: data.reportType,
-        };
-      });
-
-      setReports(reports);
-      setIsLoading(false);
-    };
 
     _fetchReports();
   }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    _fetchReports()
+  }, [year, month])
 
   const handleYearMonthChange = (year: number, month: number) => {
     setYear(year);
@@ -85,7 +90,7 @@ export const Home = () => {
   };
 
   return (
-    <VStack bg={"gray.50"} w={"full"}>
+    <VStack bg={"gray.50"} w={"full"} h={"calc(100vh - 68px)"}>
       <HStack py={8} w={"880px"}>
         <YearMonthSwitcher
           year={year}
@@ -105,7 +110,7 @@ export const Home = () => {
         rounded={"md"}
       >
         {isLoading ? (
-          <Center w={"900px"}>
+          <Center w={"900px"} h={"200px"}>
             <Spinner
               thickness="4px"
               speed="0.65s"
