@@ -23,14 +23,21 @@ export const register = async (
     );
     return res.data;
   } catch (e) {
-    return { code: 500, msg: "Internal Server Error", token: null };
+    return { code: 99, msg: "Internal Server Error", token: null };
   }
 };
 
-export const login = async (username: string, password: string) => {
-  axios.post("/user/login"),
-    {
-      username: username,
-      password: password,
-    };
+export const login = async (email: string, password: string) => {
+  try {
+    const res = await axios.post<UserResponse>(
+      "http://localhost:3000/user/login",
+      {
+        email: email,
+        password: password,
+      }
+    );
+    return res.data;
+  } catch (e) {
+    return { code: 99, msg: "Internal Server Error", token: null };
+  }
 };
