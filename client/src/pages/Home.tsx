@@ -122,6 +122,17 @@ const Cell = (props: CellProps) => {
     setReportMode("normal");
   };
 
+  // TODO
+  const opeseconds =
+    new Date(`1990-01-01 ${props.endTime}`).getTime() -
+    new Date(`1990-01-01 ${props.startTime}`).getTime()
+    // new Date(`${props.restTime}`).getTime();
+
+  const opetime =
+    Math.floor(opeseconds / 1000 / 60 / 60) +
+    ":" +
+    Math.floor((opeseconds / 1000 / 60) % 60);
+
   return (
     <Tr
       onMouseEnter={() => setHover(true)}
@@ -141,7 +152,7 @@ const Cell = (props: CellProps) => {
       <Th>{props.startTime}</Th>
       <Th>{props.endTime}</Th>
       <Th>{props.restTime}</Th>
-      <Th>{props.restTime}</Th>
+      <Th>{opetime}</Th>
 
       {reportMode === "edit" ? (
         <Th>
