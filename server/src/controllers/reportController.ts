@@ -6,16 +6,23 @@ import { getReport } from '../libs/getReport';
 const prisma = new PrismaClient();
 const router = Router();
 
+enum Code {
+  Success = 0,
+  NotUserSpecified = 4,
+  NotFieldsSpecified = 5,
+  InternalServerError = 99,
+}
+
 // GET: /report
 router.get('/', Auth.verify, async (req: Request, res: Response) => {
   if (!req.userId) {
-    await res.json({ msg: 'user is not specified' });
+    await res.json({code: Code.NotUserSpecified, msg: 'user is not specified' });
     return;
   }
-  const year = req.body.year;
-  const month = req.body.month;
+  const year = req.query.year;
+  const month = req.query.month;
   if (!year || !month) {
-    await res.json({ msg: 'year or month is not specified' });
+    await res.json({ code: Code.NotFieldsSpecified, msg: 'year or month is not specified' });
     return;
   }
 
@@ -28,7 +35,7 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
       userId: req.userId,
     },
   });
-  await res.json(report);
+  await res.json({code: Code.Success, msg: 'success', data: report});
 });
 
 // PUT: /report
