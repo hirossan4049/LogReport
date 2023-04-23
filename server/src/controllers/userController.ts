@@ -6,8 +6,6 @@ import { Auth } from '../libs/auth';
 const prisma = new PrismaClient();
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {});
-
 enum Code {
   Success = 0,
   FillAllFields = 1,
@@ -15,6 +13,32 @@ enum Code {
   InvalidAccount = 3,
   InternalServerError = 99,
 }
+
+// GET: /user
+router.get('/', Auth.verify, async (req: Request, res: Response) => {
+  if (!req.userId) {
+    res.json({ code: Code.InvalidAccount, msg: 'Invalid account' });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.userId,
+    },
+  });
+
+  if (!user) {
+    res.json({ code: Code.InvalidAccount, msg: 'Invalid account' });
+    return;
+  }
+
+  res.json({ code: Code.Success, msg: 'Success', data: {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    watchRepository: user.watchRepository
+  } });
+});
 
 // POST: /user/create
 router.post('/create', async (req: Request, res: Response) => {
