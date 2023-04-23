@@ -12,6 +12,7 @@ import {
   VStack,
   Button,
   Tooltip,
+  Spacer,
 } from "@chakra-ui/react";
 import { YearMonthSwitcher } from "../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
@@ -44,11 +45,15 @@ export const Home = () => {
 
   return (
     <VStack bg={"gray.50"} w={"full"}>
-      <YearMonthSwitcher
-        year={year}
-        month={month}
-        onChange={handleYearMonthChange}
-      />
+      <HStack py={8} w={"880px"}>
+        <YearMonthSwitcher
+          year={year}
+          month={month}
+          onChange={handleYearMonthChange}
+        />
+        <Spacer />
+        <Button>空欄の部分を一括予測</Button>
+      </HStack>
 
       <Box
         w={"880px"}
@@ -102,6 +107,7 @@ type CellProps = {
 const Cell = (props: CellProps) => {
   const [report, setReport] = useState(props.report);
   const [reportMode, setReportMode] = useState<"edit" | "normal">("normal");
+  const [hover, setHover] = useState(false);
 
   const handleCancel = () => {
     setReportMode("normal");
@@ -113,7 +119,10 @@ const Cell = (props: CellProps) => {
   };
 
   return (
-    <Tr>
+    <Tr
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
       <Th>{props.date}</Th>
       <Th>{props.startTime}</Th>
       <Th>{props.endTime}</Th>
@@ -146,26 +155,32 @@ const Cell = (props: CellProps) => {
       ) : (
         <Th>
           <HStack>
-            <Text w={"full"}>{report}</Text>
-            <IconButton
-              size={"sm"}
-              icon={<FiEdit2 />}
-              aria-label={"edit"}
-              onClick={() => setReportMode("edit")}
-              h={"20px"}
-              w={"20px"}
-            />
-
-            {props.reportType === "CHAT_GPT_WAITING" && (
-              <Tooltip label={"Githubから推測"}>
+            <Text w={"full"} h={"20px"}>
+              {report}
+            </Text>
+            {hover && (
+              <>
                 <IconButton
                   size={"sm"}
-                  icon={<TbBrandOpenai />}
+                  icon={<FiEdit2 />}
                   aria-label={"edit"}
+                  onClick={() => setReportMode("edit")}
                   h={"20px"}
                   w={"20px"}
                 />
-              </Tooltip>
+
+                {props.reportType === "CHAT_GPT_WAITING" && (
+                  <Tooltip label={"Githubから推測"}>
+                    <IconButton
+                      size={"sm"}
+                      icon={<TbBrandOpenai />}
+                      aria-label={"edit"}
+                      h={"20px"}
+                      w={"20px"}
+                    />
+                  </Tooltip>
+                )}
+              </>
             )}
           </HStack>
         </Th>
