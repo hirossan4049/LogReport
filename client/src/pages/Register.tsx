@@ -17,9 +17,13 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { register } from "../actions/user";
 import { ApiStatusCode } from "../types/ApiStatusCode";
+import { useCookies } from "react-cookie";
 
 export const Register = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,8 +31,6 @@ export const Register = () => {
   const [enableRegister, setEnableRegister] = useState(false);
 
   const handlePasswordShow = () => setPasswordShow(!passwordShow);
-
-  const toast = useToast();
 
   useEffect(() => {
     // TODO: email check
@@ -42,11 +44,19 @@ export const Register = () => {
 
     switch (result.code) {
       case ApiStatusCode.Success:
-        toast({
-          title: "登録成功",
-          status: "success",
-        });
-        navigate("/");
+        if (result.token) {
+          setCookie("token", result.token);
+          toast({
+            title: "登録成功",
+            status: "success",
+          });
+          navigate("/");
+        } else {
+          toast({
+            title: "登録に失敗しました",
+            status: "error",
+          });
+        }
         break;
       case ApiStatusCode.FillAllFields:
         toast({

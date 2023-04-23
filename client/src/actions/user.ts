@@ -23,7 +23,7 @@ export const register = async (
     );
     return res.data;
   } catch (e) {
-    return { code: 500, msg: "Internal Server Error" };
+    return { code: 500, msg: "Internal Server Error", token: null };
   }
 };
 
