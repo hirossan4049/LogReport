@@ -29,9 +29,12 @@ export const Home = () => {
 
   useEffect(() => {
     const lastDay = new Date(year, month, 0).getDate();
+    const weeks = ["日", "月", "火", "水", "木", "金", "土"];
     const reports = Array.from({ length: lastDay }, (_, k) => k + 1).map(
       (day) => {
-        return String(day);
+        const date = new Date(year, month, day).getDay();
+        const week = weeks[date];
+        return `${day}日（${week}）`;
       }
     );
 
@@ -56,20 +59,21 @@ export const Home = () => {
       </HStack>
 
       <Box
-        w={"880px"}
+        w={"920px"}
         overflowX={"scroll"}
         m={"auto"}
         bg={"white"}
         p={4}
         rounded={"md"}
       >
-        <Table w={"860px"}>
+        <Table w={"900px"}>
           <Thead>
             <Tr>
               <Th>日付</Th>
               <Th>開始時間</Th>
               <Th>終了時間</Th>
               <Th>休憩時間</Th>
+              <Th>稼働時間</Th>
               <Th colSpan={2} w={"400px"}>
                 作業内容
               </Th>
@@ -123,9 +127,20 @@ const Cell = (props: CellProps) => {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <Th>{props.date}</Th>
+      <Th
+        color={
+          props.date.includes("（土）")
+            ? "blue.300"
+            : props.date.includes("（日）")
+            ? "red.300"
+            : ""
+        }
+      >
+        {props.date}
+      </Th>
       <Th>{props.startTime}</Th>
       <Th>{props.endTime}</Th>
+      <Th>{props.restTime}</Th>
       <Th>{props.restTime}</Th>
 
       {reportMode === "edit" ? (
