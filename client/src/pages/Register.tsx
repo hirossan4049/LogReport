@@ -22,7 +22,7 @@ import { useCookies } from "react-cookie";
 export const Register = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [, setCookie, _] = useCookies(["token"]);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
