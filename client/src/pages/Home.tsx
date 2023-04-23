@@ -90,7 +90,7 @@ export const Home = () => {
   };
 
   return (
-    <VStack bg={"gray.50"} w={"full"} h={"calc(100vh - 68px)"}>
+    <VStack bg={"gray.50"} w={"full"}>
       <HStack py={8} w={"880px"}>
         <YearMonthSwitcher
           year={year}
