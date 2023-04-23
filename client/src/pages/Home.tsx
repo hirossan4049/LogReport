@@ -13,32 +13,70 @@ import {
   Button,
   Tooltip,
   Spacer,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { YearMonthSwitcher } from "../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { TbBrandOpenai } from "react-icons/tb";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { useCookies } from "react-cookie";
+import { fetchReports } from "../actions/report";
+import { axiosConfigure } from "../helpers/axiosConfig";
+import { Report } from "../types/Report";
 
 export const Home = () => {
+  const [cookies, ,] = useCookies(["token"]);
   const today = new Date();
   console.log(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
-  const [reports, setReports] = useState<string[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (cookies.token === undefined) {
+      //ひゃー
+      return;
+    }
+
     const lastDay = new Date(year, month, 0).getDate();
     const weeks = ["日", "月", "火", "水", "木", "金", "土"];
-    const reports = Array.from({ length: lastDay }, (_, k) => k + 1).map(
-      (day) => {
-        const date = new Date(year, month, day).getDay();
-        const week = weeks[date];
-        return `${day}日（${week}）`;
-      }
-    );
+    const reports: Report[] = Array.from(
+      { length: lastDay },
+      (_, k) => k + 1
+    ).map((day) => {
+      const date = new Date(year, month, day).getDay();
+      const week = weeks[date];
+      return {
+        date: `${day}日（${week}）`,
+      };
+    });
 
-    setReports(reports);
+    axiosConfigure();
+
+    const _fetchReports = async () => {
+      const response = await fetchReports(year.toString(), month.toString());
+      console.log(response.data.map((data) => new Date(data.date).getDate()));
+
+      response.data.forEach((data) => {
+        const date = new Date(data.date).getDate();
+        reports[date - 1] = {
+          id: data.id,
+          date: reports[date - 1].date,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          report: data.report,
+          reportType: data.reportType,
+        };
+      });
+
+      setReports(reports);
+      setIsLoading(false);
+    };
+
+    _fetchReports();
   }, []);
 
   const handleYearMonthChange = (year: number, month: number) => {
@@ -66,34 +104,48 @@ export const Home = () => {
         p={4}
         rounded={"md"}
       >
-        <Table w={"900px"}>
-          <Thead>
-            <Tr>
-              <Th>日付</Th>
-              <Th>開始時間</Th>
-              <Th>終了時間</Th>
-              <Th>休憩時間</Th>
-              <Th>稼働時間</Th>
-              <Th colSpan={2} w={"400px"}>
-                作業内容
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {reports.map((item) => {
-              return (
-                <Cell
-                  date={item}
-                  startTime={"9:00"}
-                  endTime={"18:00"}
-                  restTime={"1:00"}
-                  report={"頑張った"}
-                  reportType="CHAT_GPT_WAITING"
-                />
-              );
-            })}
-          </Tbody>
-        </Table>
+        {isLoading ? (
+          <Center w={"900px"}>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+          </Center>
+        ) : (
+          <Table w={"900px"}>
+            <Thead>
+              <Tr>
+                <Th>日付</Th>
+                <Th>開始時間</Th>
+                <Th>終了時間</Th>
+                <Th>休憩時間</Th>
+                <Th>稼働時間</Th>
+                <Th colSpan={2} w={"400px"}>
+                  作業内容
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <>
+                {reports.map((item) => {
+                  return (
+                    <Cell
+                      date={item.date}
+                      startTime={"0:00"}
+                      endTime={"0:00"}
+                      restTime={"0:00"}
+                      report={item.report ?? ""}
+                      reportType="CHAT_GPT_WAITING"
+                    />
+                  );
+                })}
+              </>
+            </Tbody>
+          </Table>
+        )}
       </Box>
     </VStack>
   );
@@ -125,8 +177,8 @@ const Cell = (props: CellProps) => {
   // TODO
   const opeseconds =
     new Date(`1990-01-01 ${props.endTime}`).getTime() -
-    new Date(`1990-01-01 ${props.startTime}`).getTime()
-    // new Date(`${props.restTime}`).getTime();
+    new Date(`1990-01-01 ${props.startTime}`).getTime();
+  // new Date(`${props.restTime}`).getTime();
 
   const opetime =
     Math.floor(opeseconds / 1000 / 60 / 60) +
