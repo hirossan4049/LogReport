@@ -25,9 +25,12 @@ import { useCookies } from "react-cookie";
 import { fetchAutocomplete, fetchReports } from "../actions/report";
 import { axiosConfigure } from "../helpers/axiosConfig";
 import { Report } from "../types/Report";
+import { ApiStatusCode } from "../types/ApiStatusCode";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
-  const [cookies, ,] = useCookies(["token"]);
+  const [cookies, , removeCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
   const today = new Date();
   console.log(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
@@ -51,6 +54,11 @@ export const Home = () => {
     });
 
     const response = await fetchReports(year.toString(), month.toString());
+    if (response.code === ApiStatusCode.TokenExpired) {
+      removeCookie("token");
+      navigate("/login");
+      return;
+    }
     console.log(response.data.map((data) => new Date(data.date).getDate()));
 
     response.data.forEach((data) => {
@@ -81,8 +89,8 @@ export const Home = () => {
   }, []);
 
   useEffect(() => {
-    _fetchReports()
-  }, [year, month])
+    _fetchReports();
+  }, [year, month]);
 
   const handleYearMonthChange = (year: number, month: number) => {
     setYear(year);
@@ -90,8 +98,14 @@ export const Home = () => {
   };
 
   const handleAutocomplete = async (id: string) => {
-    await fetchAutocomplete(id)
-    await _fetchReports()
+    await fetchAutocomplete(id);
+    await _fetchReports();
+  };
+
+  if (!cookies.token) {
+    return <VStack w={"full"}>
+      <Text p={32}>ログインしてください</Text>
+    </VStack>;
   }
 
   return (
@@ -149,7 +163,9 @@ export const Home = () => {
                       restTime={"0:00"}
                       report={item.report ?? ""}
                       reportType="CHAT_GPT_WAITING"
-                      handleAutocomplete={() => handleAutocomplete(item.id ?? "")}
+                      handleAutocomplete={() =>
+                        handleAutocomplete(item.id ?? "")
+                      }
                     />
                   );
                 })}

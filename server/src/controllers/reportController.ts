@@ -2,16 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import { Request, Response, Router } from 'express';
 import { Auth } from '../libs/auth';
 import { getReport } from '../libs/getReport';
+import { Code } from '../types/responseCode';
 
 const prisma = new PrismaClient();
 const router = Router();
-
-enum Code {
-  Success = 0,
-  NotUserSpecified = 4,
-  NotFieldsSpecified = 5,
-  InternalServerError = 99,
-}
 
 // GET: /report
 router.get('/', Auth.verify, async (req: Request, res: Response) => {

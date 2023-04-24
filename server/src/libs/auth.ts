@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { getConfig } from "./config";
 import { NextFunction, Request, Response } from "express";
+import { Code } from '../types/responseCode';
 
 const prisma = new PrismaClient();
 
@@ -70,7 +71,7 @@ export class Auth {
       console.error(e);
       if (e instanceof jwt.TokenExpiredError) {
         await Auth.destructionToken(bearerToken)
-        res.json({ code: 3 });
+        res.json({ code: Code.TokenExpired, msg: 'Token expired' });
       } else {
         res.json({ error: e });
       }

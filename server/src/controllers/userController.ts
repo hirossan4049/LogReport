@@ -2,17 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { Request, Response, Router } from 'express';
 import { Auth } from '../libs/auth';
+import { Code } from '../types/responseCode';
 
 const prisma = new PrismaClient();
 const router = Router();
-
-enum Code {
-  Success = 0,
-  FillAllFields = 1,
-  EmailAlreadyRegistered = 2,
-  InvalidAccount = 3,
-  InternalServerError = 99,
-}
 
 // GET: /user
 router.get('/', Auth.verify, async (req: Request, res: Response) => {
