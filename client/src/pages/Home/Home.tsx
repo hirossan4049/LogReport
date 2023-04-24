@@ -104,7 +104,6 @@ export const Home = () => {
     setReports((prevState) =>
       prevState.map((obj) => (obj.id === item.id ? report.data! : obj))
     );
-    // await _fetchReports();
   };
 
   if (!cookies.token) {

@@ -9,6 +9,8 @@ import {
   Spinner,
   Text,
   useToast,
+  Spacer,
+  Box,
 } from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
 import { FiEdit2 } from "react-icons/fi";
@@ -19,6 +21,7 @@ import { putReport } from "../../actions/report";
 type CellProps = {
   item: Report;
   handleAutocomplete: () => void;
+  // updateItem: (item: Report) => void;
 };
 
 export const Cell = (props: CellProps) => {
@@ -32,6 +35,7 @@ export const Cell = (props: CellProps) => {
   }, [props.item.date]);
   const [report, setReport] = useState(props.item.report);
   const [reportMode, setReportMode] = useState<"edit" | "normal">("normal");
+  const [reportType, setReportType] = useState(props.item.reportType);
   const [hover, setHover] = useState(false);
 
   const getDefaultStartTime = () => {
@@ -68,7 +72,9 @@ export const Cell = (props: CellProps) => {
 
   useEffect(() => {
     setReport(props.item.report);
-  }, [props.item.report]);
+    setReportType(props.item.reportType);
+  }, [props.item]);
+
 
   useEffect(() => {
     calcOpetime();
@@ -114,7 +120,7 @@ export const Cell = (props: CellProps) => {
         description: "レポートの更新に失敗しました",
         status: "error",
       });
-      handleCancel()
+      handleCancel();
     }
   };
 
@@ -151,11 +157,12 @@ export const Cell = (props: CellProps) => {
       dateIso = new Date(props.item.date).toISOString();
     }
 
-    await putReport(dateIso, sdate, edate, rdate, `${report}`);
+    const res = await putReport(dateIso, sdate, edate, rdate, `${report}`);
+    if (res.data) setReportType(res.data.reportType);
   };
 
-  const ReportTh = () => {
-    if (props.item.reportType === "CHAT_GPT_RUNNING") {
+  const ReportTh = useMemo(() => {
+    if (reportType === "CHAT_GPT_RUNNING") {
       return (
         <Th p={"10px"} pl={"32px"}>
           <Spinner h={5} w={5} />
@@ -197,9 +204,25 @@ export const Cell = (props: CellProps) => {
         return (
           <Th>
             <HStack>
-              <Text w={"full"} h={"20px"}>
-                {report}
-              </Text>
+              {reportType === "CHAT_GPT_COMPLETE" ? (
+                <HStack w={"full"}>
+                  <Text h={"20px"}>{report}</Text>
+                  <Text
+                    fontSize={"10px"}
+                    bg={"gray.100"}
+                    rounded={"full"}
+                    px={2}
+                    py={0.1}
+                  >
+                    GPT
+                  </Text>
+                  <Spacer w={"full"} />
+                </HStack>
+              ) : (
+                <Text w={"full"} h={"20px"}>
+                  {report}
+                </Text>
+              )}
               {hover && (
                 <>
                   <IconButton
@@ -227,7 +250,7 @@ export const Cell = (props: CellProps) => {
         );
       }
     }
-  };
+  }, [hover, report, reportMode, reportType]);
 
   return (
     <Tr
@@ -298,7 +321,7 @@ export const Cell = (props: CellProps) => {
             {opetime ?? "0:00"}
           </Th>
 
-          <ReportTh />
+          {ReportTh}
         </>
       ) : (
         <>
@@ -314,7 +337,7 @@ export const Cell = (props: CellProps) => {
           <Th w={28} textAlign={"center"}>
             {opetime ?? "0:00"}
           </Th>
-          <ReportTh />
+          {ReportTh}
         </>
       )}
     </Tr>
