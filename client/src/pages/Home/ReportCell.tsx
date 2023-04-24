@@ -10,7 +10,6 @@ import {
   Text,
   useToast,
   Spacer,
-  Box,
 } from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
 import { FiEdit2 } from "react-icons/fi";
@@ -21,7 +20,6 @@ import { putReport } from "../../actions/report";
 type CellProps = {
   item: Report;
   handleAutocomplete: () => void;
-  // updateItem: (item: Report) => void;
 };
 
 export const Cell = (props: CellProps) => {
