@@ -17,7 +17,7 @@ export const YearMonthSwitcher = (props: {
 
   useEffect(() => {
     props.onChange(year, month);
-  }, []);
+  }, [year, month]);
 
   const handlePrevMonth = () => {
     if (month === 1) {

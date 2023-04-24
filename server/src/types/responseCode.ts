@@ -1,4 +1,4 @@
-export enum ApiStatusCode {
+export enum Code {
   Success = 0,
   FillAllFields = 1,
   EmailAlreadyRegistered = 2,

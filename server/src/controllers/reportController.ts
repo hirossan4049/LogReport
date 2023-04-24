@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Request, Response, Router } from 'express';
 import { Auth } from '../libs/auth';
 import { getReport } from '../libs/getReport';
+import { Code } from '../types/responseCode';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -9,13 +10,13 @@ const router = Router();
 // GET: /report
 router.get('/', Auth.verify, async (req: Request, res: Response) => {
   if (!req.userId) {
-    await res.json({ msg: 'user is not specified' });
+    await res.json({ code: Code.NotUserSpecified, msg: 'user is not specified' });
     return;
   }
-  const year = req.body.year;
-  const month = req.body.month;
+  const year = req.query.year;
+  const month = req.query.month;
   if (!year || !month) {
-    await res.json({ msg: 'year or month is not specified' });
+    await res.json({ code: Code.NotFieldsSpecified, msg: 'year or month is not specified' });
     return;
   }
 
@@ -28,7 +29,7 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
       userId: req.userId,
     },
   });
-  await res.json(report);
+  await res.json({ code: Code.Success, msg: 'success', data: report });
 });
 
 // PUT: /report
@@ -42,8 +43,8 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
   const startTime = req.body.startTime;
   const endTime = req.body.endTime;
   const restTime = Number(req.body.restTime);
-  const report = req.body.report || '';
-  const reportType = req.body.reportType || 'CHAT_GPT_WAITING';
+  const report = req.body.report ?? '';
+  const reportType = report.length > 0 ? 'CUSTOM' : req.body.reportType || 'CHAT_GPT_WAITING';
 
   if (!date || !startTime || !endTime || !restTime) {
     await res.json({ msg: 'date, startTime, endTime or restTime is not specified' });
@@ -51,7 +52,7 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
   }
 
   try {
-    await prisma.report.upsert({
+    const newReport = await prisma.report.upsert({
       where: {
         report_unique: {
           userId: req.userId,
@@ -75,10 +76,10 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
         reportType: reportType,
       },
     });
-    await res.json({ msg: 'success' });
+    await res.json({ code: Code.Success, msg: 'success', data: newReport });
   } catch (e) {
-    console.error(e)
-    await res.json({ msg: 'error' });
+    console.error(e);
+    await res.json({ code: Code.InternalServerError, msg: 'error', data: null });
   }
 });
 
@@ -108,7 +109,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
     }
 
     // TODO: waitlist
-    const gpt_report = await getReport("owner", "reponame", report.startTime, report.endTime, "author")
+    const gpt_report = await getReport('owner', 'reponame', report.startTime, report.endTime, 'author');
     const new_report = await prisma.report.update({
       where: {
         id: reportId,
@@ -118,9 +119,9 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
         reportType: 'CHAT_GPT_COMPLETE',
       },
     });
-    await res.json({ msg: 'success', data: new_report });
+    await res.json({ code: Code.Success, msg: 'success', data: new_report });
   } catch (e) {
-    console.error(e)
+    console.error(e);
     await res.json({ msg: 'error' });
   }
 });
