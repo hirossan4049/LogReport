@@ -22,7 +22,7 @@ import { FiEdit2 } from "react-icons/fi";
 import { TbBrandOpenai } from "react-icons/tb";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { useCookies } from "react-cookie";
-import { fetchReports } from "../actions/report";
+import { fetchAutocomplete, fetchReports } from "../actions/report";
 import { axiosConfigure } from "../helpers/axiosConfig";
 import { Report } from "../types/Report";
 
@@ -36,6 +36,7 @@ export const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const _fetchReports = async () => {
+    setIsLoading(true);
     const lastDay = new Date(year, month, 0).getDate();
     const weeks = ["日", "月", "火", "水", "木", "金", "土"];
     const reports: Report[] = Array.from(
@@ -80,7 +81,6 @@ export const Home = () => {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
     _fetchReports()
   }, [year, month])
 
@@ -88,6 +88,11 @@ export const Home = () => {
     setYear(year);
     setMonth(month);
   };
+
+  const handleAutocomplete = async (id: string) => {
+    await fetchAutocomplete(id)
+    await _fetchReports()
+  }
 
   return (
     <VStack bg={"gray.50"} w={"full"}>
@@ -144,6 +149,7 @@ export const Home = () => {
                       restTime={"0:00"}
                       report={item.report ?? ""}
                       reportType="CHAT_GPT_WAITING"
+                      handleAutocomplete={() => handleAutocomplete(item.id ?? "")}
                     />
                   );
                 })}
@@ -163,6 +169,7 @@ type CellProps = {
   restTime: string;
   report: string;
   reportType: "CHAT_GPT_WAITING" | "CHAT_GPT_RUNNING";
+  handleAutocomplete: () => void;
 };
 
 const Cell = (props: CellProps) => {
@@ -260,6 +267,7 @@ const Cell = (props: CellProps) => {
                       aria-label={"edit"}
                       h={"20px"}
                       w={"20px"}
+                      onClick={props.handleAutocomplete}
                     />
                   </Tooltip>
                 )}

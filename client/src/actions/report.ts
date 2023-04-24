@@ -8,6 +8,12 @@ type ReportResponse = {
   data: Report[];
 };
 
+type AutoCompleteResponse = {
+  code: ApiStatusCode;
+  msg: string;
+  data: string;
+}
+
 export const fetchReports = async (year: string, month: string) => {
   try {
     const res = await axios.get<ReportResponse>(
@@ -18,6 +24,20 @@ export const fetchReports = async (year: string, month: string) => {
     return { code: 99, msg: "Internal Server Error", data: [] };
   }
 };
+
+export const fetchAutocomplete = async (reportId: string) => {
+  try {
+    const res = await axios.post<AutoCompleteResponse>(
+      `http://localhost:3000/report/autocomplete`,
+      {
+        reportId: reportId,
+      }
+    );
+    return res.data
+  } catch (e) {
+
+  }
+}
 
 export const login = async (email: string, password: string) => {
   try {
@@ -33,3 +53,4 @@ export const login = async (email: string, password: string) => {
     return { code: 99, msg: "Internal Server Error", token: null };
   }
 };
+

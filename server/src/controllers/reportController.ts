@@ -125,7 +125,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
         reportType: 'CHAT_GPT_COMPLETE',
       },
     });
-    await res.json({ msg: 'success', data: new_report });
+    await res.json({ code: Code.Success, msg: 'success', data: new_report });
   } catch (e) {
     console.error(e)
     await res.json({ msg: 'error' });
