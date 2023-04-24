@@ -1,6 +1,6 @@
 export type Report = {
   id?: string;
-  date: string;
+  date: string | Date;
   startTime?: string;
   endTime?: string;
   restTime?: number;

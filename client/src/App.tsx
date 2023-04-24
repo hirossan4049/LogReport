@@ -2,7 +2,7 @@ import { VStack } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { Header } from "./components/Header";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Home } from "./pages/Home";
+import { Home } from "./pages/Home/Home";
 import { Settings } from "./pages/Settings";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";

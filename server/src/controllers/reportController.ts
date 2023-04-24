@@ -52,7 +52,7 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
   }
 
   try {
-    await prisma.report.upsert({
+    const newReport = await prisma.report.upsert({
       where: {
         report_unique: {
           userId: req.userId,
@@ -76,10 +76,10 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
         reportType: reportType,
       },
     });
-    await res.json({ msg: 'success' });
+    await res.json({ code: Code.Success, msg: 'success', data: newReport });
   } catch (e) {
     console.error(e)
-    await res.json({ msg: 'error' });
+    await res.json({ code: Code.InternalServerError ,msg: 'error', data: null });
   }
 });
 
