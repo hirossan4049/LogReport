@@ -10,7 +10,7 @@ const router = Router();
 // GET: /report
 router.get('/', Auth.verify, async (req: Request, res: Response) => {
   if (!req.userId) {
-    await res.json({code: Code.NotUserSpecified, msg: 'user is not specified' });
+    await res.json({ code: Code.NotUserSpecified, msg: 'user is not specified' });
     return;
   }
   const year = req.query.year;
@@ -29,7 +29,7 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
       userId: req.userId,
     },
   });
-  await res.json({code: Code.Success, msg: 'success', data: report});
+  await res.json({ code: Code.Success, msg: 'success', data: report });
 });
 
 // PUT: /report
@@ -78,8 +78,8 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
     });
     await res.json({ code: Code.Success, msg: 'success', data: newReport });
   } catch (e) {
-    console.error(e)
-    await res.json({ code: Code.InternalServerError ,msg: 'error', data: null });
+    console.error(e);
+    await res.json({ code: Code.InternalServerError, msg: 'error', data: null });
   }
 });
 
@@ -109,7 +109,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
     }
 
     // TODO: waitlist
-    const gpt_report = await getReport("owner", "reponame", report.startTime, report.endTime, "author")
+    const gpt_report = await getReport('owner', 'reponame', report.startTime, report.endTime, 'author');
     const new_report = await prisma.report.update({
       where: {
         id: reportId,
@@ -121,7 +121,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
     });
     await res.json({ code: Code.Success, msg: 'success', data: new_report });
   } catch (e) {
-    console.error(e)
+    console.error(e);
     await res.json({ msg: 'error' });
   }
 });
