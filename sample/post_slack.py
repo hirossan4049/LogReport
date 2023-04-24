@@ -11,7 +11,6 @@ args = parser.parse_args()
 
 SLACK_API_TOKEN = os.environ.get("SLACK_API_TOKEN")
 SLACK_CHANNEL_ID = 'C054FTRH2UT'
-
 client = WebClient(token=SLACK_API_TOKEN)
 
 try:
