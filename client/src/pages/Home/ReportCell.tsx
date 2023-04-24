@@ -8,11 +8,13 @@ import {
   Tooltip,
   Spinner,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { TbBrandOpenai } from "react-icons/tb";
 import { Report } from "../../types/Report";
+import { putReport } from "../../actions/report";
 
 type CellProps = {
   item: Report;
@@ -20,6 +22,7 @@ type CellProps = {
 };
 
 export const Cell = (props: CellProps) => {
+  const toast = useToast();
   const weeks = ["日", "月", "火", "水", "木", "金", "土"];
   const japaneseDate = useMemo(() => {
     const date = new Date(props.item.date);
@@ -31,58 +34,125 @@ export const Cell = (props: CellProps) => {
   const [reportMode, setReportMode] = useState<"edit" | "normal">("normal");
   const [hover, setHover] = useState(false);
 
-  const startTime = useMemo(() => {
+  const getDefaultStartTime = () => {
     const startTimeDate = new Date(props.item.startTime!);
     return (
       (startTimeDate.getHours() || 0).toString().padStart(2, "0") +
       ":" +
       (startTimeDate.getMinutes() || 0).toString().padStart(2, "0")
     );
-  }, [props.item.startTime]);
+  };
+  const [startTime, setStartTime] = useState(getDefaultStartTime());
 
-  const endTime = useMemo(() => {
+  const getDefaultEndTime = () => {
     const endTimeDate = new Date(props.item.endTime!);
     return (
       (endTimeDate.getHours() || 0).toString().padStart(2, "0") +
       ":" +
       (endTimeDate.getMinutes() || 0).toString().padStart(2, "0")
     );
-  }, [props.item.endTime]);
+  };
+  const [endTime, setEndTime] = useState(getDefaultEndTime());
 
-  const restTime = useMemo(() => {
+  const getDefaultRestTime = () => {
     const restTimeDate = new Date(props.item.restTime!);
     return (
       (restTimeDate.getHours() || 0).toString().padStart(2, "0") +
       ":" +
       (restTimeDate.getMinutes() || 0).toString().padStart(2, "0")
     );
-  }, [props.item.endTime]);
+  };
+  const [restTime, setRestTime] = useState(getDefaultRestTime());
+
+  const [opetime, setOpetime] = useState("00:00");
 
   useEffect(() => {
     setReport(props.item.report);
   }, [props.item.report]);
 
+  useEffect(() => {
+    calcOpetime();
+  }, [startTime, endTime, restTime]);
+
+  const calcOpetime = () => {
+    const date = new Date(props.item.date);
+    const [startHour, startMinute] = startTime
+      .split(":")
+      .map((v) => parseInt(v));
+    const [endHour, endMinute] = endTime.split(":").map((v) => parseInt(v));
+    const [restHour, restMinute] = restTime.split(":").map((v) => parseInt(v));
+
+    date.setHours(endHour);
+    date.setMinutes(endMinute);
+    date.setHours(date.getHours() - startHour - restHour);
+    date.setMinutes(date.getMinutes() - startMinute - restMinute);
+
+    setOpetime(
+      `${date.getHours().toString().padStart(2, "0")}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`
+    );
+  };
+
   const handleCancel = () => {
     setReportMode("normal");
     setReport(props.item.report);
+    setStartTime(getDefaultStartTime());
+    setEndTime(getDefaultEndTime());
+    setRestTime(getDefaultRestTime());
   };
 
-  const handleOk = () => {
-    setReportMode("normal");
+  const handleOk = async () => {
+    try {
+      await handlePutReport();
+      await setReportMode("normal");
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "エラー",
+        description: "レポートの更新に失敗しました",
+        status: "error",
+      });
+      handleCancel()
+    }
   };
 
-  // TODO
-  const opeseconds =
-    new Date(`1990-01-01 ${props.item.endTime}`).getTime() -
-    new Date(`1990-01-01 ${props.item.startTime}`).getTime();
-  // new Date(`${props.restTime}`).getTime();
-  let opetime = "0:00";
-  if (opeseconds) {
-    opetime =
-      Math.floor(opeseconds / 1000 / 60 / 60) +
-      ":" +
-      Math.floor((opeseconds / 1000 / 60) % 60);
-  }
+  const handlePutReport = async () => {
+    const date = new Date(props.item.date);
+    const [startHour, startMinute] = startTime
+      .split(":")
+      .map((v) => parseInt(v));
+    const [endHour, endMinute] = endTime.split(":").map((v) => parseInt(v));
+    const [restHour, restMinute] = restTime.split(":").map((v) => parseInt(v));
+
+    date.setHours(endHour);
+    date.setMinutes(endMinute);
+    date.setHours(date.getHours() - startHour - restHour);
+    date.setMinutes(date.getMinutes() - startMinute - restMinute);
+
+    const [sdate, edate] = [startTime, endTime].map((v) => {
+      const date = new Date(props.item.date);
+      const [hour, minute] = v.split(":").map((v) => parseInt(v));
+      date.setHours(hour);
+      date.setMinutes(minute);
+      return date.toISOString();
+    });
+
+    const rdate = (() => {
+      const [h, m] = restTime.split(":").map((v) => parseInt(v));
+      return h * 60 + m;
+    })();
+
+    let dateIso = "";
+    if (props.item.date instanceof Date) {
+      dateIso = props.item.date.toISOString();
+    } else {
+      dateIso = new Date(props.item.date).toISOString();
+    }
+
+    await putReport(dateIso, sdate, edate, rdate, `${report}`);
+  };
 
   const ReportTh = () => {
     if (props.item.reportType === "CHAT_GPT_RUNNING") {
@@ -191,8 +261,8 @@ export const Cell = (props: CellProps) => {
               textAlign={"center"}
               type="time"
               defaultValue={startTime}
-              onBlur={(e) => {
-                console.log(e.target.value);
+              onChange={(e) => {
+                setStartTime(e.target.value);
               }}
             />
           </Th>
@@ -205,8 +275,8 @@ export const Cell = (props: CellProps) => {
               type="time"
               textAlign={"center"}
               defaultValue={endTime}
-              onBlur={(e) => {
-                console.log(e.target.value.split(":"));
+              onChange={(e) => {
+                setEndTime(e.target.value);
               }}
             />
           </Th>
@@ -219,8 +289,8 @@ export const Cell = (props: CellProps) => {
               type="time"
               textAlign={"center"}
               defaultValue={restTime}
-              onBlur={(e) => {
-                console.log(e.target.value.split(":"));
+              onChange={(e) => {
+                setRestTime(e.target.value);
               }}
             />
           </Th>

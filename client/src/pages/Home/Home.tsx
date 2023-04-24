@@ -85,10 +85,6 @@ export const Home = () => {
     setMonth(month);
   };
 
-  const handleReportPost = async (item: Report) => {
-    // const res = await putReport(item.date);
-  };
-
   const handleAutocomplete = async (item: Report) => {
     const date = item.date;
     setReports((prevState) =>
