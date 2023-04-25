@@ -58,12 +58,14 @@ export const Cell = (props: CellProps) => {
   const [endTime, setEndTime] = useState(getDefaultEndTime());
 
   const getDefaultRestTime = () => {
-    const restTimeDate = new Date(props.item.restTime!);
-    return (
-      (restTimeDate.getHours() || 0).toString().padStart(2, "0") +
-      ":" +
-      (restTimeDate.getMinutes() || 0).toString().padStart(2, "0")
-    );
+    // const restTimeDate = new Date(props.item.restTime!);
+    // console.log({restTimeDate}, props.item.restTime)
+    let min = props.item.restTime ?? 0;
+    return `${Math.floor(min / 60)
+      .toString()
+      .padStart(2, "0")}:${(min % 60)
+      .toString()
+      .padStart(2, "0")}`;
   };
   const [restTime, setRestTime] = useState(getDefaultRestTime());
 
@@ -123,7 +125,7 @@ export const Cell = (props: CellProps) => {
   };
 
   const handlePutReport = async () => {
-    console.log(props.item.date)
+    console.log(props.item.date);
     const date = new Date(props.item.date);
     const [startHour, startMinute] = startTime
       .split(":")
@@ -178,7 +180,7 @@ export const Cell = (props: CellProps) => {
 
     if (!currentId) {
       alert("error autocomplete");
-      return
+      return;
     }
 
     setReportType("CHAT_GPT_RUNNING");
