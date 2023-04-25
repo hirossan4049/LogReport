@@ -18,6 +18,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { register } from "../actions/user";
 import { ApiStatusCode } from "../types/ApiStatusCode";
 import { useCookies } from "react-cookie";
+import { axiosConfigure } from "../helpers/axiosConfig";
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -31,6 +32,10 @@ export const Register = () => {
   const [enableRegister, setEnableRegister] = useState(false);
 
   const handlePasswordShow = () => setPasswordShow(!passwordShow);
+
+  useEffect(() => {
+    axiosConfigure()
+  }, [])
 
   useEffect(() => {
     // TODO: email check

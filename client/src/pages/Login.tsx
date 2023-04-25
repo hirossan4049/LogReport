@@ -18,6 +18,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { ApiStatusCode } from "../types/ApiStatusCode";
 import { login } from "../actions/user";
 import { useCookies } from "react-cookie";
+import { axiosConfigure } from "../helpers/axiosConfig";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export const Login = () => {
 
   useEffect(() => {
     if (cookies.token) navigate("/");
+      axiosConfigure()
   }, []);
 
   useEffect(() => {
