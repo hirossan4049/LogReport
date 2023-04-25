@@ -11,9 +11,8 @@ type UserLoginResponse = {
 type UserResponse = {
   code: ApiStatusCode;
   msg: string;
-  data?: User
-}
-
+  data?: User;
+};
 
 export const fetchUser = async () => {
   try {
@@ -22,7 +21,26 @@ export const fetchUser = async () => {
   } catch (e) {
     return { code: 99, msg: "Internal Server Error", data: null };
   }
-}
+};
+
+type UpdateUserProps = {
+  username?: string;
+  email?: string;
+  watchRepository?: string;
+};
+
+export const updateUser = async ({username, email, watchRepository}: UpdateUserProps) => {
+  try {
+    const res = await axios.patch<UserResponse>("http://localhost:3000/user", {
+      username: username,
+      email: email,
+      watchRepository: watchRepository,
+    });
+    return res.data;
+  } catch (e) {
+    return { code: 99, msg: "Internal Server Error", data: null };
+  }
+};
 
 export const register = async (
   username: string,
