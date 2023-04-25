@@ -12,6 +12,10 @@ import {
   Spacer,
   Spinner,
   Center,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { YearMonthSwitcher } from "../../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
@@ -22,6 +26,10 @@ import { Report } from "../../types/Report";
 import { ApiStatusCode } from "../../types/ApiStatusCode";
 import { useNavigate } from "react-router-dom";
 import { Cell } from "./ReportCell";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import "../../assets/Koruri-Regular-normal";
 
 export const Home = () => {
   const [cookies, , removeCookie] = useCookies(["token"]);
@@ -33,6 +41,7 @@ export const Home = () => {
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExportLoading, setIsExportLoading] = useState(false);
 
   const _fetchReports = async () => {
     const lastDay = new Date(year, month, 0).getDate();
@@ -104,6 +113,31 @@ export const Home = () => {
     );
   };
 
+  const handlePdfExport = () => {
+    setIsExportLoading(true);
+    const target = document.getElementById("report-table");
+    if (target === null) return;
+
+    html2canvas(target, { scale: 3.5 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/svg", 1.0);
+      let pdf = new jsPDF();
+      pdf.setFontSize(10);
+      pdf.setFont("Koruri-Regular", "normal");
+      pdf.text(`${year}年${month}月 作業報告書`, 10, 10);
+
+      pdf.addImage(
+        imgData,
+        "SVG",
+        5,
+        12,
+        canvas.width / 18,
+        canvas.height / 18
+      );
+      pdf.save(`${year}-${month}-作業報告書.pdf`);
+      setIsExportLoading(false);
+    });
+  };
+
   if (!cookies.token) {
     return (
       <VStack w={"full"}>
@@ -114,14 +148,31 @@ export const Home = () => {
 
   return (
     <VStack bg={"gray.50"} w={"full"}>
-      <HStack py={8} w={"880px"}>
+      <HStack py={2} w={"1020px"}>
         <YearMonthSwitcher
           year={year}
           month={month}
           onChange={handleYearMonthChange}
         />
         <Spacer />
-        <Button>空欄の部分を一括予測</Button>
+        {/* <Button>空欄の部分を一括予測</Button> */}
+        <Menu>
+          <MenuButton
+            as={Button}
+            rightIcon={
+              isExportLoading ? (
+                <Spinner h={3} w={3} mx={1.5} />
+              ) : (
+                <ChevronDownIcon />
+              )
+            }
+          >
+            エクスポート
+          </MenuButton>
+          <MenuList>
+            <MenuItem onClick={handlePdfExport}>PDFで保存</MenuItem>
+          </MenuList>
+        </Menu>
       </HStack>
 
       <Box
@@ -143,14 +194,20 @@ export const Home = () => {
             />
           </Center>
         ) : (
-          <Table w={"1000px"}>
+          <Table w={"1000px"} id="report-table">
             <Thead>
               <Tr>
-                <Th w={"120px"} textAlign={"center"}>日付</Th>
+                <Th w={"120px"} textAlign={"center"}>
+                  日付
+                </Th>
                 <Th textAlign={"center"}>開始時間</Th>
                 <Th textAlign={"center"}>終了時間</Th>
-                <Th w={28} textAlign={"center"}>休憩時間</Th>
-                <Th w={28} textAlign={"center"}>稼働時間</Th>
+                <Th w={28} textAlign={"center"}>
+                  休憩時間
+                </Th>
+                <Th w={28} textAlign={"center"}>
+                  稼働時間
+                </Th>
                 <Th colSpan={2} w={"400px"}>
                   作業内容
                 </Th>
