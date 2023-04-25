@@ -11,6 +11,7 @@ import {
   MenuItem,
   MenuList,
   MenuDivider,
+  Spacer,
 } from "@chakra-ui/react";
 import { useCookies } from "react-cookie";
 import { User } from "../types/User";
@@ -40,9 +41,10 @@ export const Header = () => {
   return (
     <VStack w={"full"} spacing={0} bg={"white"}>
       <HStack w={"full"} p={2} h={14}>
-        <Link w="full" px={8} href={"/"} _hover={{ textDecoration: "none" }}>
-          <Text>LogReport</Text>
+        <Link px={8} href={"/"} _hover={{ textDecoration: "none" }}>
+          <Text fontWeight={"bold"}>LogReport</Text>
         </Link>
+        <Spacer />
         {cookies.token ? (
           <Menu>
             <MenuButton>
