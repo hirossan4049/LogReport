@@ -58,8 +58,6 @@ export const Cell = (props: CellProps) => {
   const [endTime, setEndTime] = useState(getDefaultEndTime());
 
   const getDefaultRestTime = () => {
-    // const restTimeDate = new Date(props.item.restTime!);
-    // console.log({restTimeDate}, props.item.restTime)
     let min = props.item.restTime ?? 0;
     return `${Math.floor(min / 60)
       .toString()
@@ -70,11 +68,16 @@ export const Cell = (props: CellProps) => {
   const [restTime, setRestTime] = useState(getDefaultRestTime());
 
   const [opetime, setOpetime] = useState("00:00");
+  const [isNoValue, setIsNoValue] = useState(true);
 
   useEffect(() => {
     setReport(props.item.report);
     setReportType(props.item.reportType);
   }, [props.item]);
+
+  useEffect(() => {
+    setIsNoValue(opetime === "00:00")
+  }, [opetime])
 
   useEffect(() => {
     calcOpetime();
@@ -358,16 +361,16 @@ export const Cell = (props: CellProps) => {
         </>
       ) : (
         <>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} color={isNoValue ? "gray.300" : ""}>
             {startTime}
           </Th>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} color={isNoValue ? "gray.300" : ""}>
             {endTime}
           </Th>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} color={isNoValue ? "gray.300" : ""}>
             {restTime}
           </Th>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} color={isNoValue ? "gray.300" : ""}>
             {opetime ?? "0:00"}
           </Th>
           {ReportTh}
