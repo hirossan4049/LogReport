@@ -40,7 +40,7 @@ export const Home = () => {
       { length: lastDay },
       (_, k) => k + 1
     ).map((day) => {
-      const date = new Date(year, month, day);
+      const date = new Date(year, month - 1, day);
       return {
         date: date,
       };
@@ -58,8 +58,6 @@ export const Home = () => {
       navigate("/login");
       return;
     }
-    console.log(response.data.map((data) => new Date(data.startTime!)));
-
     setReports(reports);
     setIsLoading(false);
   };

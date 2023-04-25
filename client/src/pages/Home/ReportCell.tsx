@@ -15,7 +15,7 @@ import { useMemo, useState, useEffect } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { TbBrandOpenai } from "react-icons/tb";
 import { Report } from "../../types/Report";
-import { putReport } from "../../actions/report";
+import { fetchAutocomplete, putReport } from "../../actions/report";
 
 type CellProps = {
   item: Report;
@@ -34,6 +34,7 @@ export const Cell = (props: CellProps) => {
   const [report, setReport] = useState(props.item.report);
   const [reportMode, setReportMode] = useState<"edit" | "normal">("normal");
   const [reportType, setReportType] = useState(props.item.reportType);
+  const [id, setId] = useState(props.item.id);
   const [hover, setHover] = useState(false);
 
   const getDefaultStartTime = () => {
@@ -72,7 +73,6 @@ export const Cell = (props: CellProps) => {
     setReport(props.item.report);
     setReportType(props.item.reportType);
   }, [props.item]);
-
 
   useEffect(() => {
     calcOpetime();
@@ -123,6 +123,7 @@ export const Cell = (props: CellProps) => {
   };
 
   const handlePutReport = async () => {
+    console.log(props.item.date)
     const date = new Date(props.item.date);
     const [startHour, startMinute] = startTime
       .split(":")
@@ -155,8 +156,40 @@ export const Cell = (props: CellProps) => {
       dateIso = new Date(props.item.date).toISOString();
     }
 
-    const res = await putReport(dateIso, sdate, edate, rdate, `${report}`);
-    if (res.data) setReportType(res.data.reportType);
+    const res = await putReport(dateIso, sdate, edate, rdate, report || "");
+    if (res.data) {
+      setId(res.data.id);
+      setReportType(res.data.reportType);
+    }
+    return res.data;
+  };
+
+  const handleAutocomplete = async () => {
+    let currentId: string | undefined = id;
+    if (!id) {
+      const res = await handlePutReport();
+      if (!res?.id) {
+        alert("error autocomplete");
+        return;
+      } else {
+        currentId = res.id;
+      }
+    }
+
+    if (!currentId) {
+      alert("error autocomplete");
+      return
+    }
+
+    setReportType("CHAT_GPT_RUNNING");
+
+    const report = await fetchAutocomplete(currentId);
+    if (!report.data) {
+      return;
+    }
+    // report.data.date = date;
+    setReport(report.data.report);
+    setReportType(report.data.reportType);
   };
 
   const ReportTh = useMemo(() => {
@@ -238,7 +271,7 @@ export const Cell = (props: CellProps) => {
                       aria-label={"edit"}
                       h={"20px"}
                       w={"20px"}
-                      onClick={props.handleAutocomplete}
+                      onClick={handleAutocomplete}
                     />
                   </Tooltip>
                 </>

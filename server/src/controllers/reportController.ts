@@ -46,7 +46,7 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
   const report = req.body.report ?? '';
   const reportType = report.length > 0 ? 'CUSTOM' : req.body.reportType || 'CHAT_GPT_WAITING';
 
-  if (!date || !startTime || !endTime || !restTime) {
+  if (!date || !startTime || !endTime || (restTime == undefined)) {
     await res.json({ msg: 'date, startTime, endTime or restTime is not specified' });
     return;
   }
