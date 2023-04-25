@@ -12,6 +12,7 @@ import { fetchUser, updateUser } from "../actions/user";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { ApiStatusCode } from "../types/ApiStatusCode";
+import { useReward } from "react-rewards";
 
 export const Settings = () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -20,6 +21,7 @@ export const Settings = () => {
   const [repository, setRepository] = useState("");
   const navigate = useNavigate();
   const toast = useToast();
+  const { reward, isAnimating } = useReward("rewardId", "confetti");
 
   // FIXME: recoil
   const [, setCurrentUser] = useState<User | undefined>(undefined);
@@ -37,10 +39,14 @@ export const Settings = () => {
   }, [cookies.token]);
 
   const handleSave = async () => {
-    const result = await updateUser({watchRepository: repository});
+    const result = await updateUser({ watchRepository: repository });
 
     switch (result.code) {
       case ApiStatusCode.Success:
+        if (isFirst) {
+          reward();
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
         toast({
           title: "登録成功",
           status: "success",
@@ -91,8 +97,9 @@ export const Settings = () => {
               キャンセル
             </Button>
           )}
-          <Button w={32} onClick={handleSave}>
+          <Button w={32} onClick={handleSave} isDisabled={isAnimating}>
             {isFirst ? "完了！" : "保存"}
+            <span id={"rewardId"} />
           </Button>
         </HStack>
       </VStack>
