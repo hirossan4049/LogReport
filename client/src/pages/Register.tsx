@@ -50,7 +50,7 @@ export const Register = () => {
             title: "登録成功",
             status: "success",
           });
-          navigate("/");
+          navigate("/settings?first");
         } else {
           toast({
             title: "登録に失敗しました",

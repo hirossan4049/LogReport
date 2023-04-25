@@ -1,11 +1,28 @@
 import axios from "axios";
 import { ApiStatusCode } from "../types/ApiStatusCode";
+import { User } from "../types/User";
 
-type UserResponse = {
+type UserLoginResponse = {
   code: ApiStatusCode;
   msg: string;
   token?: string;
 };
+
+type UserResponse = {
+  code: ApiStatusCode;
+  msg: string;
+  data?: User
+}
+
+
+export const fetchUser = async () => {
+  try {
+    const res = await axios.get<UserResponse>("http://localhost:3000/user");
+    return res.data;
+  } catch (e) {
+    return { code: 99, msg: "Internal Server Error", data: null };
+  }
+}
 
 export const register = async (
   username: string,
@@ -13,7 +30,7 @@ export const register = async (
   password: string
 ) => {
   try {
-    const res = await axios.post<UserResponse>(
+    const res = await axios.post<UserLoginResponse>(
       "http://localhost:3000/user/create",
       {
         username: username,
@@ -29,7 +46,7 @@ export const register = async (
 
 export const login = async (email: string, password: string) => {
   try {
-    const res = await axios.post<UserResponse>(
+    const res = await axios.post<UserLoginResponse>(
       "http://localhost:3000/user/login",
       {
         email: email,

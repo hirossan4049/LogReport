@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   }, [])
 
   return (
-    <VStack>
+    <VStack bg={"gray.50"} h={"100vh"}>
       {/* FIXME: location */}
       {location.pathname !== "/login" && location.pathname !== "/register" && (
         <Header />
