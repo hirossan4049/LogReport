@@ -25,12 +25,54 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
     return;
   }
 
-  res.json({ code: Code.Success, msg: 'Success', data: {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    watchRepository: user.watchRepository
-  } });
+  res.json({
+    code: Code.Success,
+    msg: 'Success',
+    data: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      watchRepository: user.watchRepository,
+    },
+  });
+});
+
+// PATCH: /user
+router.patch('/', Auth.verify, async (req: Request, res: Response) => {
+  if (!req.userId) {
+    res.json({ code: Code.InvalidAccount, msg: 'Invalid account' });
+    return;
+  }
+
+  const name = req.body.username;
+  const email = req.body.email;
+  // const password = req.body.password;
+  const watchRepository = req.body.watchRepository;
+
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id: req.userId,
+      },
+      data: {
+        name: name,
+        email: email,
+        watchRepository: watchRepository,
+      },
+    });
+    res.json({
+      code: Code.Success,
+      msg: 'Success',
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        watchRepository: user.watchRepository,
+      },
+    });
+  } catch (e) {
+    res.json({ code: Code.InternalServerError, msg: 'Internal Server Error' });
+  }
 });
 
 // POST: /user/create
