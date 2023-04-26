@@ -21,7 +21,6 @@ import { YearMonthSwitcher } from "../../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { fetchAutocomplete, fetchReports } from "../../actions/report";
-import { axiosConfigure } from "../../helpers/axiosConfig";
 import { Report } from "../../types/Report";
 import { ApiStatusCode } from "../../types/ApiStatusCode";
 import { useNavigate } from "react-router-dom";
@@ -76,8 +75,6 @@ export const Home = () => {
       //ひゃー
       return;
     }
-
-    axiosConfigure();
 
     _fetchReports();
   }, []);

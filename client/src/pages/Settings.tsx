@@ -13,7 +13,6 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { ApiStatusCode } from "../types/ApiStatusCode";
 import { useReward } from "react-rewards";
-import { axiosConfigure } from "../helpers/axiosConfig";
 
 export const Settings = () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -29,7 +28,6 @@ export const Settings = () => {
 
   const configure = async () => {
     if (cookies.token) {
-      axiosConfigure()
       const res = await fetchUser();
       setCurrentUser(res.data || undefined);
       setRepository(res.data?.watchRepository || "");
