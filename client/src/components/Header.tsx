@@ -21,18 +21,18 @@ import { fetchUser } from "../actions/user";
 export const Header = () => {
   const [cookies, _, removeCookie] = useCookies(["token"]);
 
-  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined)
+  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
 
   const configure = async () => {
     if (cookies.token) {
-      const res = await fetchUser()
-      setCurrentUser(res.data || undefined)
+      const res = await fetchUser();
+      setCurrentUser(res.data || undefined);
     }
-  }
+  };
 
   useEffect(() => {
-    configure()
-  }, [cookies.token])
+    configure();
+  }, [cookies.token]);
 
   const handleLogout = () => {
     removeCookie("token");
@@ -52,8 +52,24 @@ export const Header = () => {
             </MenuButton>
             <MenuList>
               <Link href="/profile" _hover={{ textDecoration: "none" }}>
-                <MenuItem>プロフィール</MenuItem>
+                <MenuItem px={4} py={0}>
+                  <Avatar
+                    name={currentUser?.name || "unknown"}
+                    h={10}
+                    w={10}
+                    mr={2}
+                  />
+                  <VStack spacing={0}>
+                    <Text w={"full"} fontWeight={"bold"}>
+                      {currentUser?.name}
+                    </Text>
+                    <Text w={"full"} fontSize={12}>
+                      @{currentUser?.name}
+                    </Text>
+                  </VStack>
+                </MenuItem>
               </Link>
+              <MenuDivider />
               <Link href="/settings" _hover={{ textDecoration: "none" }}>
                 <MenuItem>設定</MenuItem>
               </Link>
