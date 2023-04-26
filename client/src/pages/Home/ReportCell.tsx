@@ -61,9 +61,7 @@ export const Cell = (props: CellProps) => {
     let min = props.item.restTime ?? 0;
     return `${Math.floor(min / 60)
       .toString()
-      .padStart(2, "0")}:${(min % 60)
-      .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, "0")}:${(min % 60).toString().padStart(2, "0")}`;
   };
   const [restTime, setRestTime] = useState(getDefaultRestTime());
 
@@ -76,8 +74,8 @@ export const Cell = (props: CellProps) => {
   }, [props.item]);
 
   useEffect(() => {
-    setIsNoValue(opetime === "00:00")
-  }, [opetime])
+    setIsNoValue(opetime === "00:00");
+  }, [opetime]);
 
   useEffect(() => {
     calcOpetime();
@@ -207,11 +205,10 @@ export const Cell = (props: CellProps) => {
     } else {
       if (reportMode === "edit") {
         return (
-          <Th>
+          <Th px={2} py={1}>
             <HStack>
               <Input
                 size={"sm"}
-                h={5}
                 value={report}
                 onChange={(e) => {
                   setReport(e.target.value);
@@ -219,7 +216,6 @@ export const Cell = (props: CellProps) => {
               />
               <IconButton
                 size={"sm"}
-                h={5}
                 icon={<CheckIcon />}
                 aria-label={"ok"}
                 onClick={handleOk}
@@ -227,7 +223,6 @@ export const Cell = (props: CellProps) => {
               />
               <IconButton
                 size={"sm"}
-                h={5}
                 icon={<CloseIcon />}
                 aria-label={"cancel"}
                 onClick={handleCancel}
@@ -238,7 +233,7 @@ export const Cell = (props: CellProps) => {
         );
       } else {
         return (
-          <Th>
+          <Th px={2} py={1.5}>
             <HStack>
               {reportType === "CHAT_GPT_COMPLETE" ? (
                 <HStack w={"full"}>
@@ -266,16 +261,16 @@ export const Cell = (props: CellProps) => {
                     icon={<FiEdit2 />}
                     aria-label={"edit"}
                     onClick={() => setReportMode("edit")}
-                    h={"20px"}
-                    w={"20px"}
+                    h={"22px"}
+                    w={"22px"}
                   />
                   <Tooltip label={"Githubから推測"}>
                     <IconButton
                       size={"sm"}
                       icon={<TbBrandOpenai />}
                       aria-label={"edit"}
-                      h={"20px"}
-                      w={"20px"}
+                      h={"22px"}
+                      w={"22px"}
                       onClick={handleAutocomplete}
                     />
                   </Tooltip>
@@ -303,19 +298,19 @@ export const Cell = (props: CellProps) => {
             ? "red.300"
             : ""
         }
+        textAlign={"center"}
+        p={0}
       >
         {japaneseDate}
       </Th>
 
       {reportMode === "edit" ? (
         <>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} px={2} py={0}>
             <Input
               placeholder="Select Date and Time"
               size="sm"
-              h={5}
-              p={"0"}
-              m={0}
+              fontWeight={"bold"}
               w={"full"}
               textAlign={"center"}
               type="time"
@@ -325,11 +320,11 @@ export const Cell = (props: CellProps) => {
               }}
             />
           </Th>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} px={2} py={0}>
             <Input
               placeholder="Select Date and Time"
               size="sm"
-              h={5}
+              fontWeight={"bold"}
               w={"full"}
               type="time"
               textAlign={"center"}
@@ -339,11 +334,11 @@ export const Cell = (props: CellProps) => {
               }}
             />
           </Th>
-          <Th w={28} textAlign={"center"}>
+          <Th w={28} textAlign={"center"} px={2} py={0}>
             <Input
               placeholder="Select Date and Time"
               size="sm"
-              h={5}
+              fontWeight={"bold"}
               w={"full"}
               type="time"
               textAlign={"center"}

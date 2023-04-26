@@ -194,7 +194,7 @@ export const Home = () => {
           <Table w={"1000px"} id="report-table">
             <Thead>
               <Tr>
-                <Th w={"120px"} textAlign={"center"}>
+                <Th w={"80px"} textAlign={"center"} p={0}>
                   日付
                 </Th>
                 <Th textAlign={"center"}>開始時間</Th>
