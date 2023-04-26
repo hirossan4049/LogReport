@@ -38,7 +38,7 @@ export const Home = () => {
 
   const today = new Date();
 
-  const [currentUser,] = useRecoilState(currentUserState)
+  const [currentUser] = useRecoilState(currentUserState);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [reports, setReports] = useState<Report[]>([]);
@@ -127,14 +127,7 @@ export const Home = () => {
       pdf.setFontSize(8.3);
       pdf.text(`作業者名: ${currentUser?.name}`, 30, 40);
 
-      pdf.addImage(
-        imgData,
-        "SVG",
-        26,
-        50,
-        canvas.width / 8,
-        canvas.height / 8
-      );
+      pdf.addImage(imgData, "SVG", 26, 50, canvas.width / 8, canvas.height / 8);
       pdf.save(`${year}-${month}-作業報告書.pdf`);
       setIsExportLoading(false);
     });

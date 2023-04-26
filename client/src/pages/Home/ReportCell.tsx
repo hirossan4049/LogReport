@@ -237,7 +237,7 @@ export const Cell = (props: CellProps) => {
             <HStack>
               {reportType === "CHAT_GPT_COMPLETE" ? (
                 <HStack w={"full"}>
-                  <Text h={"20px"}>{report}</Text>
+                  <Text>{report}</Text>
                   <Text
                     fontSize={"10px"}
                     bg={"gray.100"}
