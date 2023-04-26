@@ -6,40 +6,35 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { User } from "../types/User";
-import { fetchUser, updateUser } from "../actions/user";
+import { updateUser } from "../actions/user";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { ApiStatusCode } from "../types/ApiStatusCode";
+import { useRecoilState } from "recoil";
+import { currentUserState } from "../atoms/currentUser";
+import { useEffect, useState } from "react";
 
 export const Profile = () => {
   const [cookies, _] = useCookies(["token"]);
   const navigate = useNavigate();
   const toast = useToast();
 
-  // FIXME: recoil
-  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserState);
+  const [newUser, setNewUser] = useState(currentUser);
   // const [isEdit, setIsEdit] = useState(false)
 
-  const configure = async () => {
-    if (cookies.token) {
-      const res = await fetchUser();
-      setCurrentUser(res.data || undefined);
-    }
-  };
-
   useEffect(() => {
-    configure();
-  }, [cookies.token]);
+    setNewUser(currentUser);
+  }, [currentUser]);
 
   const handleSave = async () => {
     const result = await updateUser({
-      username: currentUser?.name,
-      email: currentUser?.email,
+      username: newUser?.name,
+      email: newUser?.email,
     });
     switch (result.code) {
       case ApiStatusCode.Success:
+        setCurrentUser(result.data ?? undefined);
         toast({
           title: "更新完了",
           status: "success",
@@ -81,11 +76,9 @@ export const Profile = () => {
             名前
           </Text>
           <Input
-            value={currentUser?.name}
+            value={newUser?.name}
             onChange={(e) =>
-              setCurrentUser(
-                currentUser && { ...currentUser, name: e.target.value }
-              )
+              setNewUser(newUser && { ...newUser, name: e.target.value })
             }
           />
         </HStack>
@@ -95,7 +88,7 @@ export const Profile = () => {
             メールアドレス
           </Text>
           <Input
-            value={currentUser?.email}
+            value={newUser?.email}
             // onChange={(e) =>
             //   setCurrentUser(
             //     currentUser && { ...currentUser, email: e.target.value }

@@ -26,6 +26,7 @@
     "react-rewards": "^2.0.4",
     "react-router-dom": "6",
     "react-select": "^5.7.2",
+    "recoil": "^0.7.7",
     "use-debounce": "^9.0.4"
   },
   "devDependencies": {

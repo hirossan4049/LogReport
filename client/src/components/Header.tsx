@@ -14,25 +14,12 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { useCookies } from "react-cookie";
-import { User } from "../types/User";
-import { useEffect, useState } from "react";
-import { fetchUser } from "../actions/user";
+import { useRecoilState } from "recoil";
+import { currentUserState } from "../atoms/currentUser";
 
 export const Header = () => {
   const [cookies, _, removeCookie] = useCookies(["token"]);
-
-  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
-
-  const configure = async () => {
-    if (cookies.token) {
-      const res = await fetchUser();
-      setCurrentUser(res.data || undefined);
-    }
-  };
-
-  useEffect(() => {
-    configure();
-  }, [cookies.token]);
+  const [currentUser,] = useRecoilState(currentUserState)
 
   const handleLogout = () => {
     removeCookie("token");
