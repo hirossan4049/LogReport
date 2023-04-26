@@ -1,11 +1,4 @@
-import {
-  VStack,
-  Text,
-  HStack,
-  Button,
-  useToast,
-  Box,
-} from "@chakra-ui/react";
+import { VStack, Text, HStack, Button, useToast, Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { User } from "../types/User";
 import { fetchUser, updateUser } from "../actions/user";
@@ -20,6 +13,7 @@ export const Settings = () => {
   const isFirst = searchParams.has("first");
   const [cookies, _] = useCookies(["token"]);
   const [repository, setRepository] = useState("");
+  const [isSaveDisabled, setIsSaveDisabled] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
   const { reward, isAnimating } = useReward("rewardId", "confetti");
@@ -31,13 +25,22 @@ export const Settings = () => {
     if (cookies.token) {
       const res = await fetchUser();
       setCurrentUser(res.data || undefined);
-      setRepository(res.data?.watchRepository || "");
+      const repo = res.data?.watchRepository || ""
+      setRepository(repo);
+      setIsSaveDisabled(repo === "");
     }
   };
 
   useEffect(() => {
     configure();
   }, [cookies.token]);
+
+  const handleRepositoryChange = (value: string) => {
+    setRepository(value);
+    if (value !== "") {
+      setIsSaveDisabled(false);
+    }
+  };
 
   const handleSave = async () => {
     const result = await updateUser({ watchRepository: repository });
@@ -87,7 +90,10 @@ export const Settings = () => {
             </Text>
           </VStack>
           <Box w={"full"}>
-            <GitHubRepositoryInput defaultValue={repository} onChange={e => setRepository(e?.toString() ?? "")} />
+            <GitHubRepositoryInput
+              defaultValue={repository}
+              onChange={(e) => handleRepositoryChange(e?.toString() ?? "")}
+            />
           </Box>
         </HStack>
 
@@ -97,7 +103,7 @@ export const Settings = () => {
               キャンセル
             </Button>
           )}
-          <Button w={32} onClick={handleSave} isDisabled={isAnimating}>
+          <Button w={32} onClick={handleSave} isDisabled={isAnimating || isSaveDisabled}>
             {isFirst ? "完了！" : "保存"}
             <span id={"rewardId"} />
           </Button>
