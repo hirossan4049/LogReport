@@ -144,7 +144,7 @@ export const Home = () => {
   }
 
   return (
-    <VStack bg={"gray.50"} w={"full"}>
+    <VStack bg={"gray.50"} w={"full"} p={8}>
       <HStack py={2} w={"1020px"}>
         <YearMonthSwitcher
           year={year}

@@ -51,7 +51,7 @@ export const Header = () => {
               <Avatar name={currentUser?.name || "unknown"} h={10} w={10} />
             </MenuButton>
             <MenuList>
-              <Link href="/login" _hover={{ textDecoration: "none" }}>
+              <Link href="/profile" _hover={{ textDecoration: "none" }}>
                 <MenuItem>プロフィール</MenuItem>
               </Link>
               <Link href="/settings" _hover={{ textDecoration: "none" }}>

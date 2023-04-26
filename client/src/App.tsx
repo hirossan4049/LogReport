@@ -7,6 +7,7 @@ import { Settings } from "./pages/Settings";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import "./helpers/axiosConfig"
+import { Profile } from "./pages/Profile";
 
 export const App: React.FC = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ export const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
