@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   }, [cookies.token]);
 
   return (
-    <VStack bg={"gray.50"} h={"100vh"}>
+    <VStack bg={"gray.50"} h={"100vh"} pt={16}>
       {/* FIXME: location */}
       {location.pathname !== "/login" && location.pathname !== "/register" && (
         <Header />

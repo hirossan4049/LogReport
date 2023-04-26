@@ -26,7 +26,7 @@ export const Header = () => {
   };
 
   return (
-    <VStack w={"full"} spacing={0} bg={"white"}>
+    <VStack w={"full"} spacing={0} bg={"white"} position={"fixed"} top={0} zIndex={9999}>
       <HStack w={"full"} p={2} h={14}>
         <Link px={8} href={"/"} _hover={{ textDecoration: "none" }}>
           <Text fontWeight={"bold"}>LogReport</Text>
