@@ -16,6 +16,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Tfoot,
 } from "@chakra-ui/react";
 import { YearMonthSwitcher } from "../../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
@@ -220,6 +221,12 @@ export const Home = () => {
                 })}
               </>
             </Tbody>
+            <Tfoot>
+              <Tr>
+                <Th colSpan={4} textAlign={"center"}>合計作業時間</Th>
+                <Th>100時間</Th>
+              </Tr>
+            </Tfoot>
           </Table>
         )}
       </Box>
