@@ -2,9 +2,9 @@ import {
   VStack,
   Text,
   HStack,
-  Input,
   Button,
   useToast,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { User } from "../types/User";
@@ -13,6 +13,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { ApiStatusCode } from "../types/ApiStatusCode";
 import { useReward } from "react-rewards";
+import { GitHubRepositoryInput } from "../components/GitHubRepositoryInput";
 
 export const Settings = () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -85,10 +86,9 @@ export const Settings = () => {
               現状publicリポジトリのみです
             </Text>
           </VStack>
-          <Input
-            value={repository}
-            onChange={(e) => setRepository(e.target.value)}
-          />
+          <Box w={"full"}>
+            <GitHubRepositoryInput defaultValue={repository} onChange={e => setRepository(e?.toString() ?? "")} />
+          </Box>
         </HStack>
 
         <HStack pt={16} spacing={16}>
