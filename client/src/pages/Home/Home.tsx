@@ -29,6 +29,8 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import "../../assets/Koruri-Regular-normal";
+import { useRecoilState } from "recoil";
+import { currentUserState } from "../../atoms/currentUser";
 
 export const Home = () => {
   const [cookies, , removeCookie] = useCookies(["token"]);
@@ -36,6 +38,7 @@ export const Home = () => {
 
   const today = new Date();
 
+  const [currentUser,] = useRecoilState(currentUserState)
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [reports, setReports] = useState<Report[]>([]);
@@ -117,18 +120,20 @@ export const Home = () => {
 
     html2canvas(target, { scale: 3.5 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/svg", 1.0);
-      let pdf = new jsPDF();
+      let pdf = new jsPDF("p", "pt", "b5", true);
       pdf.setFontSize(10);
       pdf.setFont("Koruri-Regular", "normal");
-      pdf.text(`${year}年${month}月 作業報告書`, 10, 10);
+      pdf.text(`${year}年${month}月 作業報告書`, 30, 26);
+      pdf.setFontSize(8.3);
+      pdf.text(`作業者名: ${currentUser?.name}`, 30, 40);
 
       pdf.addImage(
         imgData,
         "SVG",
-        5,
-        12,
-        canvas.width / 18,
-        canvas.height / 18
+        26,
+        50,
+        canvas.width / 8,
+        canvas.height / 8
       );
       pdf.save(`${year}-${month}-作業報告書.pdf`);
       setIsExportLoading(false);

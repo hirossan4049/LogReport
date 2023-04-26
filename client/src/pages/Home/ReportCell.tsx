@@ -29,7 +29,7 @@ export const Cell = (props: CellProps) => {
     const date = new Date(props.item.date);
     const day = date.getDay();
     const week = weeks[day];
-    return `${date.getDate()}日（${week}）`;
+    return `${date.getDate()}日(${week})`;
   }, [props.item.date]);
   const [report, setReport] = useState(props.item.report);
   const [reportMode, setReportMode] = useState<"edit" | "normal">("normal");
@@ -292,9 +292,9 @@ export const Cell = (props: CellProps) => {
     >
       <Th
         color={
-          japaneseDate.includes("（土）")
+          japaneseDate.includes("(土)")
             ? "blue.300"
-            : japaneseDate.includes("（日）")
+            : japaneseDate.includes("(日)")
             ? "red.300"
             : ""
         }
