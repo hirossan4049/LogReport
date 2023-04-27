@@ -33,6 +33,7 @@ router.get('/', Auth.verify, async (req: Request, res: Response) => {
       name: user.name,
       email: user.email,
       watchRepository: user.watchRepository,
+      githubUsername: user.githubUsername,
     },
   });
 });
@@ -48,6 +49,7 @@ router.patch('/', Auth.verify, async (req: Request, res: Response) => {
   const email = req.body.email;
   // const password = req.body.password;
   const watchRepository = req.body.watchRepository;
+  const githubUsername = req.body.githubUsername;
 
   try {
     const user = await prisma.user.update({
@@ -58,6 +60,7 @@ router.patch('/', Auth.verify, async (req: Request, res: Response) => {
         name: name,
         email: email,
         watchRepository: watchRepository,
+        githubUsername: githubUsername,
       },
     });
     res.json({
@@ -68,6 +71,7 @@ router.patch('/', Auth.verify, async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         watchRepository: user.watchRepository,
+        githubUsername: user.githubUsername,
       },
     });
   } catch (e) {

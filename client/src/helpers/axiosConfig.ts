@@ -3,9 +3,9 @@ import { Cookies } from "react-cookie";
 
 axios.interceptors.request.use(
   (config) => {
-    console.log(config, config.url);
+    console.log(config.url);
     // FIXME
-    if (config.url?.includes("https://api.github.com/search/repositories")) {
+    if (config.url?.includes("https://api.github.com/search/")) {
       console.log("im true")
       return config;
     }

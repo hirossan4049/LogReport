@@ -36,6 +36,7 @@ export const fetchAutocomplete = async (reportId: string) => {
     const res = await axios.post<AutoCompleteResponse>(`/report/autocomplete`, {
       reportId: reportId,
     });
+    console.log(res.data)
     return res.data;
   } catch (e) {
     return { code: 99, msg: "Internal Server Error", data: null };

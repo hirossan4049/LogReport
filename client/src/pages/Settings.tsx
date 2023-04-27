@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 import { ApiStatusCode } from "../types/ApiStatusCode";
 import { useReward } from "react-rewards";
 import { GitHubRepositoryInput } from "../components/GitHubRepositoryInput";
+import { GithubUsernameInput } from "../components/GithubUsernameInput";
 
 export const Settings = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const isFirst = searchParams.has("first");
   const [cookies, _] = useCookies(["token"]);
   const [repository, setRepository] = useState("");
+  const [username, setUsername] = useState("");
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
@@ -25,9 +27,11 @@ export const Settings = () => {
     if (cookies.token) {
       const res = await fetchUser();
       setCurrentUser(res.data || undefined);
-      const repo = res.data?.watchRepository || ""
+      const repo = res.data?.watchRepository || "";
       setRepository(repo);
-      setIsSaveDisabled(repo === "");
+      const user = res.data?.githubUsername || "";
+      setUsername(user);
+      disableButtonCheck(user, repo);
     }
   };
 
@@ -35,15 +39,28 @@ export const Settings = () => {
     configure();
   }, [cookies.token]);
 
-  const handleRepositoryChange = (value: string) => {
-    setRepository(value);
-    if (value !== "") {
+  const disableButtonCheck = (username: string, repository: string) => {
+    if (repository === "" || username === "") {
+      setIsSaveDisabled(true);
+    } else {
       setIsSaveDisabled(false);
     }
   };
 
+  const handleRepositoryChange = (value: string) => {
+    setRepository(value);
+    disableButtonCheck(username, value);
+  };
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    disableButtonCheck(value, repository);
+  };
+
   const handleSave = async () => {
-    const result = await updateUser({ watchRepository: repository });
+    const result = await updateUser({
+      watchRepository: repository,
+      githubUsername: username,
+    });
 
     switch (result.code) {
       case ApiStatusCode.Success:
@@ -76,10 +93,32 @@ export const Settings = () => {
 
   return (
     <VStack>
-      <VStack bg={"white"} w={"700px"} margin={"10"} p={8} rounded={"md"}>
-        <Text fontWeight={"bold"} mb={6}>
+      <VStack
+        bg={"white"}
+        w={"700px"}
+        margin={"10"}
+        p={8}
+        rounded={"md"}
+        spacing={8}
+      >
+        <Text fontWeight={"bold"} mb={2}>
           {isFirst ? "はじめよう" : "設定"}
         </Text>
+
+        <HStack w={"full"}>
+          <VStack w={"800px"} spacing={0}>
+            <Text w={"full"} fontSize={"15"}>
+              GitHubユーザー名(hirossan4049)
+            </Text>
+          </VStack>
+          <Box w={"full"}>
+            <GithubUsernameInput
+              defaultValue={username}
+              onChange={(e) => handleUsernameChange(e?.toString() ?? "")}
+            />
+          </Box>
+        </HStack>
+
         <HStack w={"full"}>
           <VStack w={"800px"} spacing={0}>
             <Text w={"full"} fontSize={"15"}>
@@ -103,7 +142,11 @@ export const Settings = () => {
               キャンセル
             </Button>
           )}
-          <Button w={32} onClick={handleSave} isDisabled={isAnimating || isSaveDisabled}>
+          <Button
+            w={32}
+            onClick={handleSave}
+            isDisabled={isAnimating || isSaveDisabled}
+          >
             {isFirst ? "完了！" : "保存"}
             <span id={"rewardId"} />
           </Button>

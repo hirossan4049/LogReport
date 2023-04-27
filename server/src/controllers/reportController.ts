@@ -46,7 +46,7 @@ router.put('/', Auth.verify, async (req: Request, res: Response) => {
   const report = req.body.report ?? '';
   const reportType = report.length > 0 ? 'CUSTOM' : req.body.reportType || 'CHAT_GPT_WAITING';
 
-  if (!date || !startTime || !endTime || (restTime == undefined)) {
+  if (!date || !startTime || !endTime || restTime == undefined) {
     await res.json({ msg: 'date, startTime, endTime or restTime is not specified' });
     return;
   }
@@ -104,11 +104,15 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
       },
     });
     if (!user) {
-      await res.json({ msg: 'user is not found' });
+      await res.json({ code: Code.NotUserSpecified, msg: 'user is not found' });
       return;
     }
     if (!user.watchRepository) {
-      await res.json({ msg: 'watchRepository is not found' });
+      await res.json({ code: Code.WatchRepositoryNotFound, msg: 'watchRepository is not found' });
+      return;
+    }
+    if (!user.githubUsername) {
+      await res.json({ code: Code.GithubUsernameNotFound, msg: 'githubUsername is not found' });
       return;
     }
 
@@ -123,7 +127,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
     }
 
     // TODO: waitlist
-    const gpt_report = await getReport(user.watchRepository, 'hirossan4049', report.startTime, report.endTime);
+    const gpt_report = await getReport(user.watchRepository, user.githubUsername, report.startTime, report.endTime);
     const new_report = await prisma.report.update({
       where: {
         id: reportId,

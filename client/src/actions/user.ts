@@ -27,18 +27,21 @@ type UpdateUserProps = {
   username?: string;
   email?: string;
   watchRepository?: string;
+  githubUsername?: string;
 };
 
 export const updateUser = async ({
   username,
   email,
   watchRepository,
+  githubUsername,
 }: UpdateUserProps) => {
   try {
     const res = await axios.patch<UserResponse>("/user", {
       username: username,
       email: email,
       watchRepository: watchRepository,
+      githubUsername: githubUsername,
     });
     return res.data;
   } catch (e) {

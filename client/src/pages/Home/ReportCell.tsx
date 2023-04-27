@@ -16,14 +16,19 @@ import { FiEdit2 } from "react-icons/fi";
 import { TbBrandOpenai } from "react-icons/tb";
 import { Report } from "../../types/Report";
 import { fetchAutocomplete, putReport } from "../../actions/report";
+import { ApiStatusCode } from "../../types/ApiStatusCode";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 type CellProps = {
   item: Report;
-  handleAutocomplete: () => void;
 };
 
 export const Cell = (props: CellProps) => {
   const toast = useToast();
+  const navigate = useNavigate();
+  const [, , removeCookie] = useCookies(["token"]);
+
   const weeks = ["日", "月", "火", "水", "木", "金", "土"];
   const japaneseDate = useMemo(() => {
     const date = new Date(props.item.date);
@@ -184,9 +189,45 @@ export const Cell = (props: CellProps) => {
       return;
     }
 
+    const currentReportType = reportType;
     setReportType("CHAT_GPT_RUNNING");
 
     const report = await fetchAutocomplete(currentId);
+    switch (report.code) {
+      case ApiStatusCode.Success:
+        toast({
+          title: "推測完了",
+          status: "success",
+        });
+        break;
+      case ApiStatusCode.TokenExpired:
+        toast({
+          title: "トークン期限が切れています。",
+          status: "error",
+        });
+        removeCookie("token");
+        navigate("/login");
+        break;
+      case ApiStatusCode.WatchRepositoryNotFound:
+        toast({
+          title: "リポジトリが見つかりませんでした",
+          description: "設定から有効なリポジトリを設定してください",
+          status: "error",
+        });
+        setReportType(currentReportType);
+        break;
+      case ApiStatusCode.GithubUsernameNotFound:
+        toast({
+          title: "GitHubのユーザー名が見つかりませんでした",
+          description: "設定から有効なユーザー名を設定してください",
+          status: "error",
+        });
+        setReportType(currentReportType);
+        break;
+      default:
+        break;
+    }
+
     if (!report.data) {
       return;
     }

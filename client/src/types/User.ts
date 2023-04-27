@@ -4,4 +4,5 @@ export type User = {
   name: string,
   email: string,
   watchRepository?: string
+  githubUsername?: string
 }

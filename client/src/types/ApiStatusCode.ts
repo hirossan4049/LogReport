@@ -6,5 +6,7 @@ export enum ApiStatusCode {
   NotUserSpecified = 4,
   NotFieldsSpecified = 5,
   TokenExpired = 6,
+  WatchRepositoryNotFound = 7,
+  GithubUsernameNotFound = 8,
   InternalServerError = 99,
 }

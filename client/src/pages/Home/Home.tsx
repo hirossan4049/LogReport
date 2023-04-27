@@ -21,7 +21,7 @@ import {
 import { YearMonthSwitcher } from "../../components/YearMonthSwitcher";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { fetchAutocomplete, fetchReports } from "../../actions/report";
+import { fetchReports } from "../../actions/report";
 import { Report } from "../../types/Report";
 import { ApiStatusCode } from "../../types/ApiStatusCode";
 import { useNavigate } from "react-router-dom";
@@ -91,27 +91,6 @@ export const Home = () => {
   const handleYearMonthChange = (year: number, month: number) => {
     setYear(year);
     setMonth(month);
-  };
-
-  const handleAutocomplete = async (item: Report) => {
-    const date = item.date;
-    setReports((prevState) =>
-      prevState.map((obj) =>
-        obj.id === item.id ? { ...obj, reportType: "CHAT_GPT_RUNNING" } : obj
-      )
-    );
-
-    if (!item.id) {
-      return;
-    }
-    const report = await fetchAutocomplete(item.id);
-    if (!report.data) {
-      return;
-    }
-    report.data.date = date;
-    setReports((prevState) =>
-      prevState.map((obj) => (obj.id === item.id ? report.data! : obj))
-    );
   };
 
   const handlePdfExport = () => {
@@ -212,18 +191,15 @@ export const Home = () => {
             <Tbody>
               <>
                 {reports.map((item) => {
-                  return (
-                    <Cell
-                      item={item}
-                      handleAutocomplete={() => handleAutocomplete(item)}
-                    />
-                  );
+                  return <Cell item={item} />;
                 })}
               </>
             </Tbody>
             <Tfoot>
               <Tr>
-                <Th colSpan={4} textAlign={"center"}>合計作業時間</Th>
+                <Th colSpan={4} textAlign={"center"}>
+                  合計作業時間
+                </Th>
                 <Th>100時間</Th>
               </Tr>
             </Tfoot>

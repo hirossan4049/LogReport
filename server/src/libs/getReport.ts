@@ -7,6 +7,7 @@ export const getReport = async (owner_repo: string, author: string, from: Date, 
   const github_api_key = process.env.GITHUB_API_TOKEN;
   const chatgpt_api_key = process.env.CHATGPT_API_TOKEN;
   const complete_engine = process.env.COMPLETE_ENGINE;
+  console.log("getReportOrder:", owner_repo, author, from, to)
   // FIXME: hack
   const message = await exec(
     `GITHUB_API_TOKEN=${github_api_key} \
