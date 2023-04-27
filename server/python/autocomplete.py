@@ -26,6 +26,10 @@ for commit in commits:
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 engine = os.environ.get("COMPLETE_ENGINE") or "text-davinci-002"
 
+if comments_list == []:
+    print("コミットがありません")
+    exit(0)
+
 if engine == "text-davinci-002":
     response = openai.Completion.create(
         engine="text-davinci-002",
@@ -39,9 +43,8 @@ elif engine == "gpt-3.5-turbo":
     res = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "以下はgitlogのメッセージです。要約したメッセージのみ出力せよ"},
-            {"role": "system", "content": "15字以内にまとめよ"},
-            {"role": "user", "content": f"{comments_list}"}
+            {"role": "user", "content": f"{comments_list}"},
+            {"role": "system", "content": "gitlogのメッセージです。15字に要約しメッセージのみ出力せよ"},
         ]
     )
     print(res.choices[0].message.content)
