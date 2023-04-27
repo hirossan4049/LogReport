@@ -25,6 +25,7 @@ enum AppConfigKey {
 model User {
   id              String      @id @default(cuid())
   name            String
+  githubUsername  String?
   email           String      @unique
   password        String      @unique
   createdAt       DateTime    @default(now())
