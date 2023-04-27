@@ -98,6 +98,20 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+    });
+    if (!user) {
+      await res.json({ msg: 'user is not found' });
+      return;
+    }
+    if (!user.watchRepository) {
+      await res.json({ msg: 'watchRepository is not found' });
+      return;
+    }
+
     const report = await prisma.report.findUnique({
       where: {
         id: reportId,
@@ -109,7 +123,7 @@ router.post('/autocomplete', Auth.verify, async (req: Request, res: Response) =>
     }
 
     // TODO: waitlist
-    const gpt_report = await getReport('owner', 'reponame', report.startTime, report.endTime, 'author');
+    const gpt_report = await getReport(user.watchRepository, 'hirossan4049', report.startTime, report.endTime);
     const new_report = await prisma.report.update({
       where: {
         id: reportId,
