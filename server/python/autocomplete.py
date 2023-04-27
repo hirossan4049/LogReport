@@ -44,7 +44,7 @@ elif engine == "gpt-3.5-turbo":
         model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": f"{comments_list}"},
-            {"role": "system", "content": "gitlogのメッセージです。15字に要約しメッセージのみ出力せよ"},
+            {"role": "system", "content": "gitlogのメッセージです。10字に要約し1行でメッセージのみ出力せよ"},
         ]
     )
     print(res.choices[0].message.content)
