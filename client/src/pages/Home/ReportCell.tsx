@@ -23,6 +23,7 @@ import { calcOpetime, date2Time, min2Time } from "../../helpers/DateHelpers";
 
 type CellProps = {
   item: Report;
+  updateReport: (report: Report) => void;
 };
 
 export const Cell = (props: CellProps) => {
@@ -60,8 +61,14 @@ export const Cell = (props: CellProps) => {
   }, [opetime]);
 
   useEffect(() => {
-    const calcOpe = calcOpetime(props.item.date, startTime, endTime, restTime, 'time');
-    setOpetime(calcOpe.toString())
+    const calcOpe = calcOpetime(
+      props.item.date,
+      startTime,
+      endTime,
+      restTime,
+      "time"
+    );
+    setOpetime(calcOpe.toString());
   }, [startTime, endTime, restTime]);
 
   const handleCancel = () => {
@@ -125,6 +132,7 @@ export const Cell = (props: CellProps) => {
     if (res.data) {
       setId(res.data.id);
       setReportType(res.data.reportType);
+      props.updateReport(res.data);
     }
     return res.data;
   };
@@ -191,6 +199,7 @@ export const Cell = (props: CellProps) => {
     // report.data.date = date;
     setReport(report.data.report);
     setReportType(report.data.reportType);
+    props.updateReport(report.data);
   };
 
   const ReportTh = useMemo(() => {

@@ -32,6 +32,7 @@ import jsPDF from "jspdf";
 import "../../assets/Koruri-Regular-normal";
 import { useRecoilState } from "recoil";
 import { currentUserState } from "../../atoms/currentUser";
+import { calcOpetime, date2Time, min2Time } from "../../helpers/DateHelpers";
 
 export const Home = () => {
   const [cookies, , removeCookie] = useCookies(["token"]);
@@ -42,6 +43,7 @@ export const Home = () => {
   const [currentUser] = useRecoilState(currentUserState);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
+  const [totalWorkTime, setTotalWorkTime] = useState(0);
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isExportLoading, setIsExportLoading] = useState(false);
@@ -74,6 +76,23 @@ export const Home = () => {
     setIsLoading(false);
   };
 
+  const calcTotalWorkTime = () => {
+    // ReportCellと同じ計算をしていて無駄だけどReportCellにHomeはあまり関わりたくないのでとりあえず
+    const opetimes = reports.map((report) => {
+      const startTime = date2Time(report.startTime!);
+      const endTime = date2Time(report.endTime!);
+      const restTime = min2Time(report.restTime ?? 0);
+      return Number(
+        calcOpetime(report.date, startTime, endTime, restTime, "min")
+      );
+    });
+    return opetimes.reduce((p, v) => p + v, 0);
+  };
+
+  const update = () => {
+    setTotalWorkTime(calcTotalWorkTime());
+  };
+
   useEffect(() => {
     if (cookies.token === undefined) {
       //ひゃー
@@ -87,6 +106,10 @@ export const Home = () => {
     setIsLoading(true);
     _fetchReports();
   }, [year, month]);
+
+  useEffect(() => {
+    update();
+  }, [reports]);
 
   const handleYearMonthChange = (year: number, month: number) => {
     setYear(year);
@@ -191,7 +214,20 @@ export const Home = () => {
             <Tbody>
               <>
                 {reports.map((item) => {
-                  return <Cell item={item} />;
+                  return (
+                    <Cell
+                      item={item}
+                      updateReport={(repo) => {
+                        const newReports = reports.map((r) => {
+                          if (r.date === repo.date) {
+                            return repo;
+                          }
+                          return r;
+                        });
+                        setReports(newReports);
+                      }}
+                    />
+                  );
                 })}
               </>
             </Tbody>
@@ -200,7 +236,7 @@ export const Home = () => {
                 <Th colSpan={4} textAlign={"center"}>
                   合計作業時間
                 </Th>
-                <Th>100時間</Th>
+                <Th>{(totalWorkTime / 60).toFixed(1)}時間</Th>
               </Tr>
             </Tfoot>
           </Table>
