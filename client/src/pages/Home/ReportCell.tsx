@@ -19,6 +19,7 @@ import { fetchAutocomplete, putReport } from "../../actions/report";
 import { ApiStatusCode } from "../../types/ApiStatusCode";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { calcOpetime, date2Time, min2Time } from "../../helpers/DateHelpers";
 
 type CellProps = {
   item: Report;
@@ -42,33 +43,9 @@ export const Cell = (props: CellProps) => {
   const [id, setId] = useState(props.item.id);
   const [hover, setHover] = useState(false);
 
-  const getDefaultStartTime = () => {
-    const startTimeDate = new Date(props.item.startTime!);
-    return (
-      (startTimeDate.getHours() || 0).toString().padStart(2, "0") +
-      ":" +
-      (startTimeDate.getMinutes() || 0).toString().padStart(2, "0")
-    );
-  };
-  const [startTime, setStartTime] = useState(getDefaultStartTime());
-
-  const getDefaultEndTime = () => {
-    const endTimeDate = new Date(props.item.endTime!);
-    return (
-      (endTimeDate.getHours() || 0).toString().padStart(2, "0") +
-      ":" +
-      (endTimeDate.getMinutes() || 0).toString().padStart(2, "0")
-    );
-  };
-  const [endTime, setEndTime] = useState(getDefaultEndTime());
-
-  const getDefaultRestTime = () => {
-    let min = props.item.restTime ?? 0;
-    return `${Math.floor(min / 60)
-      .toString()
-      .padStart(2, "0")}:${(min % 60).toString().padStart(2, "0")}`;
-  };
-  const [restTime, setRestTime] = useState(getDefaultRestTime());
+  const [startTime, setStartTime] = useState(date2Time(props.item.startTime!));
+  const [endTime, setEndTime] = useState(date2Time(props.item.endTime!));
+  const [restTime, setRestTime] = useState(min2Time(props.item.restTime ?? 0));
 
   const [opetime, setOpetime] = useState("00:00");
   const [isNoValue, setIsNoValue] = useState(true);
@@ -83,36 +60,16 @@ export const Cell = (props: CellProps) => {
   }, [opetime]);
 
   useEffect(() => {
-    calcOpetime();
+    const calcOpe = calcOpetime(props.item.date, startTime, endTime, restTime, 'time');
+    setOpetime(calcOpe.toString())
   }, [startTime, endTime, restTime]);
-
-  const calcOpetime = () => {
-    const date = new Date(props.item.date);
-    const [startHour, startMinute] = startTime
-      .split(":")
-      .map((v) => parseInt(v));
-    const [endHour, endMinute] = endTime.split(":").map((v) => parseInt(v));
-    const [restHour, restMinute] = restTime.split(":").map((v) => parseInt(v));
-
-    date.setHours(endHour);
-    date.setMinutes(endMinute);
-    date.setHours(date.getHours() - startHour - restHour);
-    date.setMinutes(date.getMinutes() - startMinute - restMinute);
-
-    setOpetime(
-      `${date.getHours().toString().padStart(2, "0")}:${date
-        .getMinutes()
-        .toString()
-        .padStart(2, "0")}`
-    );
-  };
 
   const handleCancel = () => {
     setReportMode("normal");
     setReport(props.item.report);
-    setStartTime(getDefaultStartTime());
-    setEndTime(getDefaultEndTime());
-    setRestTime(getDefaultRestTime());
+    setStartTime(date2Time(props.item.startTime!));
+    setEndTime(date2Time(props.item.endTime!));
+    setRestTime(min2Time(props.item.restTime ?? 0));
   };
 
   const handleOk = async () => {
