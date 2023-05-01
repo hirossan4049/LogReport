@@ -233,10 +233,10 @@ export const Home = () => {
             </Tbody>
             <Tfoot>
               <Tr>
-                <Th colSpan={4} textAlign={"center"}>
+                <Th colSpan={3} textAlign={"right"}>
                   合計作業時間
                 </Th>
-                <Th>{(totalWorkTime / 60).toFixed(1)}時間</Th>
+                <Th colSpan={2} textAlign={"right"}>{(totalWorkTime / 60).toFixed(1)}時間</Th>
               </Tr>
             </Tfoot>
           </Table>
